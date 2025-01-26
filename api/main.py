@@ -3,8 +3,8 @@ from fastapi import FastAPI
 app = FastAPI()
 
 @app.get("/")
-def root():
-    return {"message": "Hello World"}
+async def root(id: int = 1):
+    return {"id": f"{id}"}
 
 if __name__ == "__main__":
     import uvicorn
