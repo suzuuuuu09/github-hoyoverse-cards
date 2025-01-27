@@ -2,7 +2,7 @@ from fastapi import FastAPI
 
 app = FastAPI()
 
-@app.get("/")
+@app.get("/api")
 async def root(id: int = 1):
     return {"id": f"{id}"}
 

@@ -2,9 +2,13 @@
   "version": 2,
   "routes": [
     {
-      "src": "/(.*)",
+      "src": "/api/(.*)",
       "dest": "api/main.py"
-    }
+    },
+    // {
+    //   "src": "/api/(.*)",
+    //   "dest": "api/main.py"
+    // }
   ],
   "functions": {
     "api/main.py": {
