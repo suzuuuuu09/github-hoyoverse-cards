@@ -18,7 +18,7 @@ async def fetch_user_data(user_id: int):
 async def main():
     user_id = 819312869
     nickname, level, signature = await fetch_user_data(user_id)
-    print(nickname, level, signature)
+    print(f"{nickname} Lv.{level} {signature}")
 
 if __name__ == "__main__":
     asyncio.run(main())
