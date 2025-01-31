@@ -16,6 +16,7 @@ Githubでの使用を目的としている。
 | `bg` | 背景画像 | x | 1 |
 | `bg_color` | 背景色 | x |  |
 | `locale` | 言語 | x | en |
+| `hide_uid` |  |  | false |
 
 ```text
 https://hv-cards.vercel.app/api/{game}/?uid={uid}
