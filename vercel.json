@@ -4,11 +4,7 @@
     {
       "src": "/api/(.*)",
       "dest": "api/main.py"
-    },
-    // {
-    //   "src": "/api/(.*)",
-    //   "dest": "api/main.py"
-    // }
+    }
   ],
   "functions": {
     "api/main.py": {

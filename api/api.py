@@ -11,8 +11,9 @@ async def root(id: int = 1):
     return {"id": f"{id}"}
 
 @app.get("/image")
-async def image(text: str = "Hello, World!"):
-    b64_img = create_image(text=text)
+# pillowで画像を作成しレスポンスさせる
+async def image():
+    b64_img = create_image("Hello, wolf!")
     img_data = base64.b64decode(b64_img)
     img = BytesIO(img_data)
     return StreamingResponse(img, media_type="image/png")
