@@ -1,10 +1,27 @@
 from PIL import Image, ImageDraw, ImageFont, ImageChops
-import base64
-from io import BytesIO
-import hoyo_api
-import asyncio
+from dataclasses import dataclass
+from typing import Tuple
 import json
+import asyncio
+import hoyo_api
 
+@dataclass
+class TextPosition:
+    x: int
+    y: int
+    text: str
+    font_size: int
+    color: str = "#fcfcfc"
+
+@dataclass
+class UserInfo:
+    name: str
+    adventure_rank: int
+    achievement: str
+    friendship_max: str
+    tower: str
+    theater: str
+    uid: int
 
 def text_image(path, text):
     im = Image.open(path)
@@ -13,13 +30,10 @@ def text_image(path, text):
     font = ImageFont.truetype("assets/fonts/gi.ttf", 36)
     draw.text((10, 10), text=text, font=font, fill=(0, 0, 0))
 
-    # buffered = BytesIO()
-    # im.save(buffered, format="PNG")
-    # buffered.seek(0)
-    # return buffered
     return im
 
 def draw_text_image(im, text, location, font, font_size, color="#fcfcfc"):
+    """テキストを画像に挿入"""
     draw = ImageDraw.Draw(im)
     font = ImageFont.truetype(font, font_size)
     draw.text(location, text=text, font=font, fill=color)
@@ -57,171 +71,138 @@ def multiply_image(base_im, overlay_im, opacity: float):
     im = Image.blend(base_im, im_multiplied, opacity)
     return im
 
-if __name__ == "__main__":
-    # im = crop_center_image(2100, 756)
-
-    # NOTE: 500x180のサイズにしたのはGithub上で都合がよかったサイズ
-    # im.resize((500, 180)).save("assets/img/gi/rs_0.png")
-    base_im = Image.open("assets/img/gi/rs_0.png")
-    overlay_im = Image.open("assets/img/gradient.png")
-    im = multiply_image(base_im, overlay_im, 0.8)
-    font = "assets/fonts/gi.ttf"
-
-
-    # 言語設定ファイルの読み込み
+def load_localization(lang: str = "ja") -> dict:
+    """言語設定ファイルを読み込む"""
     with open("assets/localization.json", "r", encoding="utf-8") as f:
-        localization = json.load(f)
-    lang = "ja"
+        return json.load(f)[lang]
 
+def create_base_image(base_path: str, overlay_path: str, opacity: float = 0.8) -> Image:
+    """ベース画像の作成"""
+    base_im = Image.open(base_path)
+    overlay_im = Image.open(overlay_path)
+    return multiply_image(base_im, overlay_im, opacity)
+
+def calculate_text_position(align: str, image_width: int, total_width: int, margin: int = 10) -> int:
+    """テキストの開始位置を計算"""
+    match align:
+        case "left":
+            return margin
+        case "center":
+            return (image_width - total_width) // 2
+        case "right":
+            return image_width - total_width - margin
+
+def draw_text_group(im: Image, position: TextPosition, font_path: str) -> Image:
+    """テキストグループを描画"""
+    return draw_text_image(
+        im=im,
+        location=(position.x, position.y),
+        text=position.text,
+        font=font_path,
+        font_size=position.font_size,
+        color=position.color
+    )
+
+def draw_stats_item(im: Image, start_x: int, label: str, value: str, font: str,
+                    item_spacing: int, localization: dict) -> Tuple[Image, int]:
+    """統計項目を描画"""
+    # ラベルの描画
+    im = draw_text_image(
+        im=im,
+        location=(start_x, 160),
+        text=localization[label],
+        font=font,
+        font_size=12,
+        color="#a0a0a0"
+    )
+
+    # ラベルの幅を取得
+    text_width = get_text_width(localization[label], font, 12)
+
+    # 値の描画
+    im = draw_text_image(
+        im=im,
+        location=(start_x + (text_width - get_text_width(str(value), font, 16)) / 2, 140),
+        text=str(value),
+        font=font,
+        font_size=16
+    )
+
+    return im, text_width
+
+def draw_user_info(im: Image, user_info: UserInfo, align_top: str, align_bottom: str,
+                   font: str, localization: dict) -> Image:
+    """ユーザー情報を描画"""
+    image_width = im.size[0]
+
+    # 上部の配置計算
+    name_width = get_text_width(user_info.name, font, 16)
+    rank_width = get_text_width(f"Lv. {user_info.adventure_rank}", font, 10)
+    uid_width = get_text_width(f"UID: {user_info.uid}", font, 12)
+    top_total_width = name_width + rank_width + 5
+
+    name_start_x = calculate_text_position(align_top, image_width, top_total_width)
+    uid_start_x = calculate_text_position(align_top, image_width, uid_width)
+
+    # 上部の描画
+    positions = [
+        TextPosition(x=name_start_x, y=10, text=user_info.name, font_size=16),
+        TextPosition(x=name_start_x + name_width + 5, y=15, text=f"Lv. {user_info.adventure_rank}", font_size=10),
+        TextPosition(x=uid_start_x, y=30, text=f"UID: {user_info.uid}", font_size=12)
+    ]
+
+    for pos in positions:
+        im = draw_text_group(im, pos, font)
+
+    # 下部の統計情報の描画
+    item_spacing = 10
+    start_x = calculate_text_position(align_bottom, image_width, bottom_total_width(localization, font, item_spacing))
+
+    stats = [
+        ("achievements", user_info.achievement),
+        ("max_friendship", user_info.friendship_max),
+        ("spiral_abyss", user_info.tower),
+        ("imaginarium_theater", user_info.theater)
+    ]
+
+    current_x = start_x
+    for label, value in stats:
+        im, width = draw_stats_item(im, current_x, label, value, font, item_spacing, localization)
+        current_x += width + item_spacing
+
+    return im
+
+def bottom_total_width(localization: dict, font: str, item_spacing: int) -> int:
+    """下部の全体幅を計算"""
+    labels = ['achievements', 'max_friendship', 'spiral_abyss', 'imaginarium_theater']
+    widths = [get_text_width(localization[label], font, 12) for label in labels]
+    return sum(widths) + item_spacing * 3
+
+if __name__ == "__main__":
+    # 初期設定
+    font = "assets/fonts/gi.ttf"
+    localization = load_localization()
+
+    # ベース画像の作成
+    im = create_base_image("assets/img/gi/rs_0.png", "assets/img/gradient.png")
+
+    # ユーザー情報の取得
     uid = 801081402
-    user_info = asyncio.run(hoyo_api.fetch_user_data(uid))
+    user_data = asyncio.run(hoyo_api.fetch_user_data(uid))
 
-    user_name = user_info["user_name"]  # ユーザー名
-    adv_rank = "Lv." + str(user_info["adventure_rank"])  # 冒険ランク
-    achv = str(user_info.get("achievement", "-"))  # アチーブメント数
-    max_friendship = user_info.get("friendship_max", "-")  #  好感度MAXキャラ数
-    tower = f"{user_info['tower'].get('floor', '-')}-{user_info['tower'].get('level', '-')}" if user_info.get('tower') else "-"  # 螺旋
-    theater = localization[lang]['theater_act'].format(act=user_info['theater']['act']) if user_info.get('theater', {}).get('act') else "-"  # 幻想シアター
-
-    align_top = "left"
-    align_bottom = "right"
-    image_width = base_im.size[0]
-
-    # 上部の合計幅を計算
-    name_width = get_text_width(user_name, font, 16)
-    rank_width = get_text_width(adv_rank, font, 10)
-    uid_width = get_text_width(f"UID: {str(uid)}", font, 12)
-    top_total_width = name_width + rank_width + 5  # 名前とランクの間のスペース
-
-    # 上部の開始位置を計算
-    match align_top:
-        case "left":
-            name_start_x = 10
-            uid_start_x = 10
-        case "center":
-            name_start_x = (image_width - top_total_width) // 2
-            uid_start_x = (image_width - uid_width) // 2  # UIDを中央揃え
-        case "right":
-            name_start_x = image_width - top_total_width - 10
-            uid_start_x = image_width - uid_width - 10  # UIDを右揃え
-
-    # 名前の挿入
-    im = draw_text_image(
-        im=im,
-        location=(name_start_x, 10),
-        text=user_name,
-        font=font,
-        font_size=16
+    # ユーザー情報の整形
+    user_info = UserInfo(
+        name=user_data['user_name'],
+        adventure_rank=user_data['adventure_rank'],
+        achievement=str(user_data.get("achievement", "-")),
+        friendship_max=user_data.get("friendship_max", "-"),
+        tower=f"{user_data['tower'].get('floor', '-')}-{user_data['tower'].get('level', '-')}" if user_data.get('tower') else "-",
+        theater=localization['theater_act'].format(act=user_data['theater']['act']) if user_data.get('theater', {}).get('act') else "-",
+        uid=uid
     )
 
-    # 冒険ランクの挿入
-    im = draw_text_image(
-        im=im,
-        location=(name_start_x + name_width + 5, 15),
-        text=adv_rank,
-        font=font,
-        font_size=10
-    )
+    # 画像の描画
+    im = draw_user_info(im, user_info, "left", "right", font, localization)
 
-    # UIDの挿入
-    im = draw_text_image(
-        im=im,
-        location=(uid_start_x, 30),
-        text=f"UID: {str(uid)}",
-        font=font,
-        font_size=12
-    )
-
-    item_spacing = 10  # 項目間のスペース
-    bottom_total_width = (
-        get_text_width(localization[lang]["achievements"], font, 12) +
-        get_text_width(localization[lang]["max_friendship"], font, 12) +
-        get_text_width(localization[lang]["spiral_abyss"], font, 12) +
-        get_text_width(localization[lang]["imaginarium_theater"], font, 12) +
-        item_spacing * 3  # 項目間のスペース
-    )
-
-    match align_bottom:
-        case "left":
-            start_bottom_x = 10
-        case "center":
-            start_bottom_x = (image_width - bottom_total_width) // 2
-        case "right":
-            start_bottom_x = image_width - bottom_total_width - 10
-
-    # アチーブメント数の挿入
-    im = draw_text_image(
-        im=im,
-        location=(start_bottom_x, 160),
-        text=localization[lang]["achievements"],
-        font=font,
-        font_size=12,
-        color="#a0a0a0"
-    )
-    achv_text_width = get_text_width(localization[lang]["achievements"], font, 12)
-    im = draw_text_image(
-        im=im,
-        location=(start_bottom_x + (achv_text_width - get_text_width(achv, font, 16)) / 2, 140),
-        text=f"{achv}",
-        font=font,
-        font_size=16
-    )
-
-    # 好感度MAXキャラ数の挿入
-    friendship_start_x = start_bottom_x + achv_text_width + item_spacing
-    im = draw_text_image(
-        im=im,
-        location=(friendship_start_x, 160),
-        text=localization[lang]["max_friendship"],
-        font=font,
-        font_size=12,
-        color="#a0a0a0"
-    )
-    max_friendship_text_width = get_text_width(localization[lang]["max_friendship"], font, 12)
-    im = draw_text_image(
-        im=im,
-        location=(friendship_start_x + (max_friendship_text_width - get_text_width(str(max_friendship), font, 16)) / 2, 140),
-        text=f"{max_friendship}",
-        font=font,
-        font_size=16
-    )
-
-    # 螺旋の挿入
-    spiral_start_x = friendship_start_x + max_friendship_text_width + item_spacing
-    im = draw_text_image(
-        im=im,
-        location=(spiral_start_x, 160),
-        text=localization[lang]["spiral_abyss"],
-        font=font,
-        font_size=12,
-        color="#a0a0a0"
-    )
-    tower_text_width = get_text_width(localization[lang]["spiral_abyss"], font, 12)
-    im = draw_text_image(
-        im=im,
-        location=(spiral_start_x + (tower_text_width - get_text_width(tower, font, 16)) / 2, 140),
-        text=f"{tower}",
-        font=font,
-        font_size=16
-    )
-
-    # 幻想シアターの挿入
-    theater_start_x = spiral_start_x + tower_text_width + item_spacing
-    im = draw_text_image(
-        im=im,
-        location=(theater_start_x, 160),
-        text=localization[lang]["imaginarium_theater"],
-        font=font,
-        font_size=12,
-        color="#a0a0a0"
-    )
-    theater_text_width = get_text_width(localization[lang]["imaginarium_theater"], font, 12)
-    im = draw_text_image(
-        im=im,
-        location=(theater_start_x + (theater_text_width - get_text_width(theater, font, 16)) / 2, 140),
-        text=theater,
-        font=font,
-        font_size=16
-    )
-
+    # 画像の保存
     im.save("assets/img/gi/preview.png")
