@@ -12,5 +12,19 @@
     "spiral_abyss": "深境螺旋",
     "imaginarium_theater": "幻想シアター",
     "theater_act": "第{act}幕"
+  },
+  "zh": {
+    "achievements": "成就达成数",
+    "max_friendship": "满好感角色数",
+    "spiral_abyss": "深境螺旋",
+    "imaginarium_theater": "幻想真境剧诗",
+    "theater_act": "第{act}幕"
+  },
+  "ko": {
+    "achievements": "업적 달성 개수",
+    "max_friendship": "호감도 MAX 캐릭터 수",
+    "spiral_abyss": "나선 비경",
+    "imaginarium_theater": "현실 속 환상극",
+    "theater_act": "제{act}막"
   }
 }
