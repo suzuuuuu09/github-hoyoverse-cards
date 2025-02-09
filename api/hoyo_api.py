@@ -15,8 +15,9 @@ async def fetch_user_data(user_id: int):
                 base_user_info = {
                     "user_name": player_info["nickname"],  # ユーザー名
                     "adventure_rank": player_info["level"],  # 冒険ランク
-                    "status_msg": player_info["signature"],  # ステータスメッセージ
-                    "achievement": player_info["finishAchievementNum"],  # アチーブメント数
+                    "status_msg": player_info.get("signature"),  # ステータスメッセージ
+                    "achievement": player_info.get("finishAchievementNum"),  # アチーブメント数
+                    "friendship_max": player_info.get("fetterCount")  # 好感度MAXキャラ数
                 }
 
                 # 螺旋
@@ -40,7 +41,7 @@ async def fetch_user_data(user_id: int):
                 return None
 
 if __name__ == "__main__":
-    user_id = 854276201
+    user_id = 801081402
 
     user_info = asyncio.run(fetch_user_data(user_id))
     print(user_info)

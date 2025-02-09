@@ -1,0 +1,16 @@
+{
+  "en": {
+    "achievements": "Achievements",
+    "max_friendship": "Max Friendship",
+    "spiral_abyss": "Spiral Abyss",
+    "imaginarium_theater": "Imaginarium Theater",
+    "theater_act": "Act {act}"
+  },
+  "ja": {
+    "achievements": "アチーブメント",
+    "max_friendship": "好感度MAX",
+    "spiral_abyss": "深境螺旋",
+    "imaginarium_theater": "幻想シアター",
+    "theater_act": "第{act}幕"
+  }
+}
