@@ -8,7 +8,7 @@ import os
 # Vercel環境でのみ動作か判定
 is_vercel = os.environ.get('VERCEL') == '1'
 
-# Vercek環境でのみ動作
+# Vercel環境でのみ動作
 if is_vercel:
     from api import hoyo_api
 else:
@@ -31,6 +31,7 @@ class UserInfo:
     tower: str
     theater: str
     uid: int
+    hide_uid: bool = False
 
 def text_image(path, text):
     im = Image.open(path)
@@ -60,9 +61,8 @@ def get_text_height(text, font, font_size):
     bbox = font.getbbox(text)
     return bbox[3] - bbox[1]
 
-def crop_center_image(crop_w, crop_h):
+def crop_center_image(im: Image, crop_w: int, crop_h: int) -> Image:
     """画像を中心で切り抜き"""
-    im = Image.open("assets/img/gi/0.png")
     im_w, im_h = im.size
     im_crop = im.crop((
         (im_w - crop_w) // 2,
@@ -72,6 +72,39 @@ def crop_center_image(crop_w, crop_h):
     ))
     return im_crop
 
+def smart_crop_image(im: Image, target_w: int, target_h: int) -> Image:
+    """
+    画像を賢く切り抜き、指定サイズにリサイズする
+    
+    Args:
+        im (Image): 入力画像
+        target_w (int): 目標の幅
+        target_h (int): 目標の高さ
+        
+    Returns:
+        Image: 処理後の画像
+    """
+    # 元画像のサイズを取得
+    im_w, im_h = im.size
+    target_ratio = target_w / target_h
+    
+    # Step 1: アスペクト比の調整
+    if im_w / im_h > target_ratio:
+        # 画像が横長すぎる場合
+        new_w = int(im_h * target_ratio)
+        crop_x = (im_w - new_w) // 2
+        im = im.crop((crop_x, 0, crop_x + new_w, im_h))
+    elif im_w / im_h < target_ratio:
+        # 画像が縦長すぎる場合
+        new_h = int(im_w / target_ratio)
+        crop_y = (im_h - new_h) // 2
+        im = im.crop((0, crop_y, im_w, crop_y + new_h))
+    
+    # Step 2: リサイズ
+    im = im.resize((target_w, target_h), Image.Resampling.LANCZOS)
+    
+    return im
+
 def multiply_image(base_im, overlay_im, opacity: float):
     """画像の乗算"""
     base_im = base_im.convert("RGBA")
@@ -80,7 +113,7 @@ def multiply_image(base_im, overlay_im, opacity: float):
     im = Image.blend(base_im, im_multiplied, opacity)
     return im
 
-def load_localization(lang: str = "ja") -> dict:
+def load_localization(lang: str = "en") -> dict:
     """言語設定ファイルを読み込む"""
     with open("assets/localization.json", "r", encoding="utf-8") as f:
         return json.load(f)[lang]
@@ -157,8 +190,15 @@ def draw_user_info(im: Image, user_info: UserInfo, align_top: str, align_bottom:
     positions = [
         TextPosition(x=name_start_x, y=10, text=user_info.name, font_size=16),
         TextPosition(x=name_start_x + name_width + 5, y=15, text=f"Lv. {user_info.adventure_rank}", font_size=10),
-        TextPosition(x=uid_start_x, y=30, text=f"UID: {user_info.uid}", font_size=12)
     ]
+
+    # UIDを隠さない場合のみUIDを追加
+    if not user_info.hide_uid:
+        uid_width = get_text_width(f"UID: {user_info.uid}", font, 12)
+        uid_start_x = calculate_text_position(align_top, image_width, uid_width)
+        positions.append(
+            TextPosition(x=uid_start_x, y=30, text=f"UID: {user_info.uid}", font_size=12)
+        )
 
     for pos in positions:
         im = draw_text_group(im, pos, font)

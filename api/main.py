@@ -1,11 +1,12 @@
 from fastapi import FastAPI
 from fastapi.responses import StreamingResponse
 import os
+from random import randint
 
 # Vercel環境でのみ動作か判定
 is_vercel = os.environ.get('VERCEL') == '1'
 
-# Vercek環境でのみ動作
+# Vercel環境でのみ動作
 if is_vercel:
     from api import hoyo_api
     from api import img
@@ -19,16 +20,26 @@ app = FastAPI()
 def index():
     return {"message": "Hello world!"}
 
-@app.get("/image")
-async def get_image(uid: int = 819312869):
-    # im = img.text_image("assets/img/gi/preview.png", text=text)
+@app.get("/api")
+async def get_image(uid: int, lang: str="en",
+                    top: str="left", bottom: str="right",
+                    hide_uid: bool=False, bg: int=None):
 
     # 初期設定
     font = "assets/fonts/gi.ttf"
-    localization = img.load_localization()
+    localization = img.load_localization(lang)
+    
+    # 背景画像の設定
+    if bg is None:
+        # 画像ファイルのリストを取得
+        files = os.listdir("assets/img/gi")
+        image_files = [f for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+        bg_id = randint(1, len(image_files))
+    else:
+        bg_id = bg
 
     # ベース画像の作成
-    im = img.create_base_image("assets/img/gi/rs_0.png", "assets/img/gradient.png")
+    im = img.create_base_image(f"assets/img/gi/{bg_id}.png", "assets/img/gradient.png")
 
     # ユーザー情報の取得
     hoyo_user_data = await hoyo_api.fetch_user_data(uid)
@@ -44,13 +55,14 @@ async def get_image(uid: int = 819312869):
         friendship_max=str(hoyo_user_data.friendship_max or "-"),
         tower=f"{hoyo_user_data.tower.floor or ''}-{hoyo_user_data.tower.level or ''}" if hoyo_user_data.tower else "-",
         theater=localization['theater_act'].format(act=hoyo_user_data.theater.act) if hoyo_user_data.theater and hoyo_user_data.theater.act else "-",
-        uid=uid
+        uid=uid,
+        hide_uid=hide_uid
     )
 
     # 画像の描画
-    im = img.draw_user_info(im, user_info, "left", "right", font, localization)
+    im = img.draw_user_info(im, user_info, top, bottom, font, localization)
     
-    # Convert image to bytes
+    # 画像をbyteに変換
     from io import BytesIO
     img_byte_arr = BytesIO()
     im.save(img_byte_arr, format='PNG')
