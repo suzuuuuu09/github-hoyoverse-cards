@@ -3,7 +3,16 @@ from dataclasses import dataclass
 from typing import Tuple
 import json
 import asyncio
-import hoyo_api
+import os
+
+# Vercel環境でのみ動作か判定
+is_vercel = os.environ.get('VERCEL') == '1'
+
+# Vercek環境でのみ動作
+if is_vercel:
+    from api import hoyo_api
+else:
+    import hoyo_api
 
 @dataclass
 class TextPosition:
