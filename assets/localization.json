@@ -13,11 +13,18 @@
     "imaginarium_theater": "幻想シアター",
     "theater_act": "第{act}幕"
   },
-  "zh": {
+  "zh-cn": {
     "achievements": "成就达成数",
     "max_friendship": "满好感角色数",
     "spiral_abyss": "深境螺旋",
     "imaginarium_theater": "幻想真境剧诗",
+    "theater_act": "第{act}幕"
+  },
+  "zh-tw": {
+    "achievements": "成就達成數",
+    "max_friendship": "滿好感角色數",
+    "spiral_abyss": "深境螺旋",
+    "imaginarium_theater": "幻想真境劇詩",
     "theater_act": "第{act}幕"
   },
   "ko": {
