@@ -1,7 +1,9 @@
 from PIL import Image, ImageDraw, ImageFont, ImageChops
 from dataclasses import dataclass
-from typing import Tuple
+from typing import Tuple, TYPE_CHECKING
 import json
+if TYPE_CHECKING:
+    from PIL.Image import Image
 import asyncio
 import os
 
