@@ -229,31 +229,83 @@ def bottom_total_width(localization: dict, font: str, item_spacing: int) -> int:
     widths = [get_text_width(localization[label], font, 12) for label in labels]
     return sum(widths) + item_spacing * 3
 
-if __name__ == "__main__":
-    # 初期設定
-    font = "assets/fonts/gi.ttf"
-    localization = load_localization()
+def add_rounded_corners(im: Image, radius: int) -> Image:
+    """
+    画像に角丸を適用する
+    
+    Args:
+        im (Image): 入力画像
+        radius (int): 角の半径（ピクセル）
+        
+    Returns:
+        Image: 角丸処理後の画像
+    """
+    # アルファチャンネル付きの新しい画像を作成
+    circle = Image.new('L', (radius * 2, radius * 2), 0)
+    draw = ImageDraw.Draw(circle)
+    draw.ellipse((0, 0, radius * 2 - 1, radius * 2 - 1), fill=255)
+    
+    # アルファチャンネル用のマスクを作成
+    alpha = Image.new('L', im.size, 255)
+    w, h = im.size
+    
+    # 四隅にマスクを適用
+    alpha.paste(circle.crop((0, 0, radius, radius)), (0, 0))  # 左上
+    alpha.paste(circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0))  # 右上
+    alpha.paste(circle.crop((0, radius, radius, radius * 2)), (0, h - radius))  # 左下
+    alpha.paste(circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius))  # 右下
+    
+    # 画像をRGBAモードに変換し、マスクを適用
+    im = im.convert('RGBA')
+    im.putalpha(alpha)
+    
+    return im
 
-    # ベース画像の作成
-    im = create_base_image("assets/img/gi/rs_0.png", "assets/img/gradient.png")
-
-    # ユーザー情報の取得
-    uid = 801081402
-    user_data = asyncio.run(hoyo_api.fetch_user_data(uid))
-
-    # ユーザー情報の整形
-    user_info = UserInfo(
-        name=user_data['user_name'],
-        adventure_rank=user_data['adventure_rank'],
-        achievement=str(user_data.get("achievement", "-")),
-        friendship_max=user_data.get("friendship_max", "-"),
-        tower=f"{user_data['tower'].get('floor', '-')}-{user_data['tower'].get('level', '-')}" if user_data.get('tower') else "-",
-        theater=localization['theater_act'].format(act=user_data['theater']['act']) if user_data.get('theater', {}).get('act') else "-",
-        uid=uid
+def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', lang: str, localization: dict) -> UserInfo:
+    """
+    hoyo_apiのUserInfoをimg用のUserInfoに変換する
+    """
+    return UserInfo(
+        name=hoyo_user.user_name,
+        adventure_rank=hoyo_user.adventure_rank,
+        achievement=str(hoyo_user.achievement or "-"),
+        friendship_max=str(hoyo_user.friendship_max or "-"),
+        tower=f"{hoyo_user.tower.floor or '-'}-{hoyo_user.tower.level or '-'}" if hoyo_user.tower else "-",
+        theater=localization['theater_act'].format(act=hoyo_user.theater.act) if hoyo_user.theater and hoyo_user.theater.act else "-",
+        uid=uid,
+        hide_uid=False
     )
 
-    # 画像の描画
-    im = draw_user_info(im, user_info, "left", "right", font, localization)
+if __name__ == "__main__":
+    try:
+        # 初期設定
+        font = "assets/fonts/gi.ttf"
+        localization = load_localization("ja")  # 日本語を指定
 
-    # 画像の保存
-    im.save("assets/img/gi/preview.png")
+        # ベース画像の作成
+        im = create_base_image("assets/img/gi/1.png", "assets/img/gradient.png")
+
+        # ユーザー情報の取得
+        uid = 801081402
+        user_data = asyncio.run(hoyo_api.fetch_user_data(uid))
+        
+        if user_data is None:
+            print("ユーザー情報の取得に失敗しました")
+            exit(1)
+
+        # UserInfoの変換
+        user_info = convert_hoyo_to_img_userinfo(user_data, "ja", localization)
+
+        # 画像の描画
+        im = draw_user_info(im, user_info, "left", "right", font, localization)
+
+        # 角丸を適用
+        im = add_rounded_corners(im, 20)
+
+        # 画像の保存
+        output_path = "assets/img/gi/preview.png"
+        im.save(output_path)
+        print(f"画像を保存しました: {output_path}")
+
+    except Exception as e:
+        print(f"エラーが発生しました: {e}")

@@ -16,15 +16,14 @@ else:
 
 app = FastAPI()
 
-@app.get("/")
-def index():
-    return {"message": "Hello world!"}
-
 @app.get("/api")
+def index():
+    return {"message": "API is Run!"}
+
+@app.get("/api/card")
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: int=None):
-
     # 初期設定
     font = "assets/fonts/gi.ttf"
     localization = img.load_localization(lang)
