@@ -16,7 +16,7 @@ else:
 
 app = FastAPI()
 
-@app.get("/api")
+@app.get("/api/info")
 def index():
     return {"message": "API is Run!"}
 
