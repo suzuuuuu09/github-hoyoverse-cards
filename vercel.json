@@ -6,8 +6,17 @@
       "dest": "api/main.py"
     },
     {
+      "src": "/(.*)/",
+      "status": 308,
+      "headers": { "Location": "/$1" }
+    },
+    {
+      "src": "/(.*)\\.(\\w+)",
+      "dest": "/$1.$2"
+    },
+    {
       "src": "/(.*)",
-      "dest": "web/dist/$1"
+      "dest": "/$1.html"
     }
   ],
   "functions": {
