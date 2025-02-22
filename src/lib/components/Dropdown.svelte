@@ -61,7 +61,7 @@
       <div class="py-1" role="menu">
         {#each options as option}
           <button
-            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-100 dark:hover:bg-gray-700"
+            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700"
             on:click={() => selectOption(option)}
           >
             {option}

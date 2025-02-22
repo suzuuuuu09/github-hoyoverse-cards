@@ -6,7 +6,9 @@
   
   let selectedLangOption = "English";
   let selectedGameOption = "Genshin Impact";
-  let selectedHideUidOption = "False";
+  let selectedHideUidOption = false;
+  let selectedTopOption = "Left";
+  let selectedBottomOption = "Right";
 
   function handleGameSelect(event: CustomEvent<{ selectedOption: string }>) {
     selectedGameOption = event.detail.selectedOption;
@@ -16,8 +18,16 @@
     selectedLangOption = event.detail.selectedOption;
   }
 
-  function handleHideUidSelect(event: CustomEvent<{ selectedOption: string }>) {
-    selectedHideUidOption = event.detail.selectedOption;
+  function handleHideUidSelect(event: CustomEvent<{ selectedOption: boolean }>) {
+      selectedHideUidOption = event.detail.selectedOption;
+  }
+
+  function handleTopSelect(event: CustomEvent<{ selectedOption: string }>) {
+    selectedTopOption = event.detail.selectedOption;
+  }
+
+  function handleBottomSelect(event: CustomEvent<{ selectedOption: string }>) {
+    selectedBottomOption = event.detail.selectedOption;
   }
 </script>
 
@@ -81,11 +91,41 @@
           <Dropdown
             id="hide-uid"
             options={["True", "False"]}
-            initialSelectedOption={selectedHideUidOption}
-            on:select={handleHideUidSelect}
+            initialSelectedOption={selectedHideUidOption ? "True" : "False"}
+            on:select={(event) => handleHideUidSelect(new CustomEvent('select', { detail: { selectedOption: event.detail.selectedOption === "True" } }))}
+          />
+        </div>
+        
+        <!-- 項目6(TOP) -->
+        <div class="flex my-1.5 items-center justify-between">
+          <label for="top" class="text-gray-900 dark:text-white">Top</label>
+          <Dropdown
+            id="top"
+            options={["Left", "Center", "Right"]}
+            initialSelectedOption={selectedTopOption}
+            on:select={handleTopSelect}
           />
         </div>
 
+        <!-- 項目7(BOTTOM) -->
+        <div class="flex my-1.5 items-center justify-between">
+          <label for="bottom" class="text-gray-900 dark:text-white">Bottom</label>
+          <Dropdown
+            id="bottom"
+            options={["Left", "Center", "Right"]}
+            initialSelectedOption={selectedBottomOption}
+            on:select={handleBottomSelect}
+          />
+        </div>
+        
+        <div class="pt-80 my-1.5 flex justify-center">
+          <button
+            class="w-1/6 bg-blue-500 text-white flex items-center justify-center px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+            on:click={handleGenerate}
+          >
+            Generate
+          </button>
+        </div>
       </Card>
 
       <!-- PreviewCard -->
