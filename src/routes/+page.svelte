@@ -3,6 +3,7 @@
   import Card from "$lib/components/Card.svelte";
   import Dropdown from "$lib/components/Dropdown.svelte";
   import InputField from "$lib/components/InputField.svelte";
+  import CodeBlock from "$lib/components/CodeBlock.svelte";
   
   let selectedLangOption = "English";
   let selectedGameOption = "Genshin Impact";
@@ -29,6 +30,14 @@
   function handleBottomSelect(event: CustomEvent<{ selectedOption: string }>) {
     selectedBottomOption = event.detail.selectedOption;
   }
+
+  const sampleCode = `
+    function hello() {
+      console.log("Hello, World!");
+    }
+
+    hello();
+  `;
 </script>
 
 <main class="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 duration-300">
@@ -121,7 +130,6 @@
         <div class="pt-80 my-1.5 flex justify-center">
           <button
             class="w-1/6 bg-blue-500 text-white flex items-center justify-center px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-            on:click={handleGenerate}
           >
             Generate
           </button>
@@ -131,6 +139,12 @@
       <!-- PreviewCard -->
       <Card>
         <h2 class="text-3xl mb-3 font-bold text-center text-gray-900 dark:text-white duration-300">Preview</h2>
+        <!-- MarkdownPreview -->
+        <h3 class="text-xl mb-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
+        <CodeBlock code="[![Github HoYoverse Card](https://hv-cards.vercel.app/api/card?uid=819312869)](https://hv-cards.vercel.app)"/>
+        <!-- HTMLPreview -->
+        <h3 class="text-xl mb-3 font-bold text-gray-900 dark:text-white duration-300">HTML</h3>
+        <CodeBlock code="<a href='https://hv-cards.vercel.app'><img src='https://hv-cards.vercel.app/api/card?uid=819312869' alt='Github HoYoverse Card'></a>"/>
       </Card>
     </div>
   </div>
