@@ -1,10 +1,6 @@
 <script lang="ts">
-  import ThemeToggle from "$lib/components/buttons/ThemeToggleButton.svelte";
-  import Card from "$lib/components/Card.svelte";
-  import Dropdown from "$lib/components/Dropdown.svelte";
-  import InputField from "$lib/components/InputField.svelte";
-  import CodeBlock from "$lib/components/CodeBlock.svelte";
-  import ImagePreview from "$lib/components/ImagePreview.svelte";
+  import Icon from "@iconify/svelte";
+  import { Card, ThemeToggle, CodeBlock, Dropdown, ImagePreview, InputField } from "$lib/components";
   
   const gameMap = {
     "Genshin Impact": "gi",
@@ -160,6 +156,10 @@
             top={selectedTopOption.toLowerCase()}
             bottom={selectedBottomOption.toLowerCase()}
           />
+        {:else}
+        <div class="flex flex-wrap w-full max-w-[800px] px-auto py-20 text-center justify-center bg-gray-100 dark:bg-gray-700 text-gray-900 dark:text-white rounded-lg duration-300">
+          <p class="text-center text-gray-900 dark:text-white duration-300">Please enter a UID to see the preview.</p>
+        </div>
         {/if}
         <!-- MarkdownPreview -->
         <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
@@ -170,4 +170,15 @@
       </Card>
     </div>
   </div>
+
+  <footer class="flex justify-center mt-8">
+    <button
+      class="p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative"
+      on:click={() => location.href='https://github.com/suzuuuuu09/hv-cards'}
+      title="View on GitHub"
+      style="cursor:pointer"
+    >
+      <Icon icon="mdi:github" class="w-8 h-8 text-gray-900 dark:text-white duration-300" />
+    </button>
+  </footer>
 </main>
