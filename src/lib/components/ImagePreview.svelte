@@ -1,4 +1,6 @@
 <script lang="ts">
+  import Icon from "@iconify/svelte";
+  
   export let game: 'gi' | 'hsr' | 'zzz' = 'gi';
   export let uid: string = '';
   export let bg: string = '';
@@ -7,16 +9,28 @@
   export let top: string = '';
   export let bottom: string = '';
 
+  let isLoading = true;
+
   $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hv-cards.vercel.app';
   $: imageUrl = `${baseUrl}/api/card/${game}/?uid=${uid}${bg ? `&bg=${bg}` : ''}${lang !== 'en' ? `&lang=${lang}` : ''}${hideUid ? '&hide_uid=true' : ''}${top ? `&top=${top}` : ''}${bottom ? `&bottom=${bottom}` : ''}`;
+
+  function handleImageLoad() {
+    isLoading = false;
+  }
 </script>
 
-<div class="w-full max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden">
+<div class="w-full max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden relative">
   {#if uid.trim()}
+    {#if isLoading}
+      <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
+        <Icon icon="mdi:loading" class="w-12 h-12 text-gray-900 dark:text-white animate-spin" />
+      </div>
+    {/if}
     <img
       src={imageUrl}
       alt="Profile Card Preview"
       class="w-full h-auto block"
+      on:load={handleImageLoad}
     />
   {:else}
     <div class="p-8 text-center bg-gray-100 dark:bg-gray-800 text-gray-900 dark:text-white rounded-lg">
