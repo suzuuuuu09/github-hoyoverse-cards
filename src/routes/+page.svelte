@@ -4,23 +4,49 @@
   import Dropdown from "$lib/components/Dropdown.svelte";
   import InputField from "$lib/components/InputField.svelte";
   import CodeBlock from "$lib/components/CodeBlock.svelte";
+  import ImagePreview from "$lib/components/ImagePreview.svelte";
   
-  let selectedLangOption = "English";
-  let selectedGameOption = "Genshin Impact";
+  const gameMap = {
+    "Genshin Impact": "gi",
+    "Honkai Star Rail": "hsr",
+    "Zenless Zone Zero": "zzz"
+  } as const;
+
+  const langMap = {
+    "简体中文": "cn",
+    "繁體中文": "tw",
+    "English": "en",
+    "日本語": "jp",
+    "한국어": "kr"
+  } as const;
+
+  type GameOption = keyof typeof gameMap;
+  type LangOption = keyof typeof langMap;
+
+  let selectedGameOption: GameOption = "Genshin Impact";
+  let selectedLangOption: LangOption = "English";
   let selectedHideUidOption = false;
   let selectedTopOption = "Left";
   let selectedBottomOption = "Right";
+  let uid = "";
+  let bgId = "";
 
-  function handleGameSelect(event: CustomEvent<{ selectedOption: string }>) {
+  $: gameParam = gameMap[selectedGameOption];
+  $: langParam = langMap[selectedLangOption];
+  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hv-cards.vercel.app';
+  $: markdownCode = `[![Github HoYoverse Card](${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''})](https://hv-cards.vercel.app/)`;
+  $: htmlCode = `<a href='https://hv-cards.vercel.app/'><img src='${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''}' alt='Github HoYoverse Card'></a>`;
+
+  function handleGameSelect(event: CustomEvent<{ selectedOption: GameOption }>) {
     selectedGameOption = event.detail.selectedOption;
   }
 
-  function handleLangSelect(event: CustomEvent<{ selectedOption: string }>) {
+  function handleLangSelect(event: CustomEvent<{ selectedOption: LangOption }>) {
     selectedLangOption = event.detail.selectedOption;
   }
 
   function handleHideUidSelect(event: CustomEvent<{ selectedOption: boolean }>) {
-      selectedHideUidOption = event.detail.selectedOption;
+    selectedHideUidOption = event.detail.selectedOption;
   }
 
   function handleTopSelect(event: CustomEvent<{ selectedOption: string }>) {
@@ -30,14 +56,6 @@
   function handleBottomSelect(event: CustomEvent<{ selectedOption: string }>) {
     selectedBottomOption = event.detail.selectedOption;
   }
-
-  const sampleCode = `
-    function hello() {
-      console.log("Hello, World!");
-    }
-
-    hello();
-  `;
 </script>
 
 <main class="min-h-screen p-8 bg-gray-100 dark:bg-gray-900 duration-300">
@@ -70,6 +88,7 @@
             id="uid"
             type="text"
             placeholder="Type UID..."
+            bind:value={uid}
           />
         </div>
         
@@ -80,6 +99,7 @@
             id="bg"
             type="text"
             placeholder="Type Background ID..."
+            bind:value={bgId}
           />
         </div>
 
@@ -126,25 +146,27 @@
             on:select={handleBottomSelect}
           />
         </div>
-        
-        <div class="pt-80 my-1.5 flex justify-center">
-          <button
-            class="w-1/6 bg-blue-500 text-white flex items-center justify-center px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
-          >
-            Generate
-          </button>
-        </div>
       </Card>
-
       <!-- PreviewCard -->
       <Card>
         <h2 class="text-3xl mb-3 font-bold text-center text-gray-900 dark:text-white duration-300">Preview</h2>
+        {#if uid.trim()}
+          <ImagePreview
+            game={gameParam}
+            uid={uid}
+            bg={bgId}
+            lang={langParam}
+            hideUid={selectedHideUidOption}
+            top={selectedTopOption.toLowerCase()}
+            bottom={selectedBottomOption.toLowerCase()}
+          />
+        {/if}
         <!-- MarkdownPreview -->
         <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
-        <CodeBlock code="[![Github HoYoverse Card](https://hv-cards.vercel.app/api/card?uid=819312869)](https://hv-cards.vercel.app)"/>
+        <CodeBlock code={markdownCode}/>
         <!-- HTMLPreview -->
         <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">HTML</h3>
-        <CodeBlock code="<a href='https://hv-cards.vercel.app'><img src='https://hv-cards.vercel.app/api/card?uid=819312869' alt='Github HoYoverse Card'></a>"/>
+        <CodeBlock code={htmlCode}/>
       </Card>
     </div>
   </div>
