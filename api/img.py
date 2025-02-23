@@ -120,7 +120,7 @@ def load_localization(lang: str = "en") -> dict:
     with open("assets/localization.json", "r", encoding="utf-8") as f:
         return json.load(f)[lang]
 
-def create_base_image(base_path: str, overlay_path: str, opacity: float = 0.8) -> Image:
+def create_base_image(base_path: str, overlay_path: str, opacity: float = 0.7) -> Image:
     """ベース画像の作成"""
     base_im = Image.open(base_path)
     overlay_im = Image.open(overlay_path)
@@ -157,7 +157,7 @@ def draw_stats_item(im: Image, start_x: int, label: str, value: str, font: str,
         text=localization[label],
         font=font,
         font_size=12,
-        color="#a0a0a0"
+        color="#d0d0d0"
     )
 
     # ラベルの幅を取得
@@ -280,7 +280,7 @@ if __name__ == "__main__":
     try:
         # 初期設定
         font = "assets/fonts/gi.ttf"
-        localization = load_localization("ja")  # 日本語を指定
+        localization = load_localization("jp")  # 日本語を指定
 
         # ベース画像の作成
         im = create_base_image("assets/img/gi/1.png", "assets/img/gradient.png")
@@ -294,7 +294,7 @@ if __name__ == "__main__":
             exit(1)
 
         # UserInfoの変換
-        user_info = convert_hoyo_to_img_userinfo(user_data, "ja", localization)
+        user_info = convert_hoyo_to_img_userinfo(user_data, "jp", localization)
 
         # 画像の描画
         im = draw_user_info(im, user_info, "left", "right", font, localization)
@@ -303,7 +303,7 @@ if __name__ == "__main__":
         im = add_rounded_corners(im, 20)
 
         # 画像の保存
-        output_path = "assets/img/gi/preview.png"
+        output_path = "assets/img/preview.png"
         im.save(output_path)
         print(f"画像を保存しました: {output_path}")
 
