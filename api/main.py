@@ -20,7 +20,7 @@ app = FastAPI()
 def index():
     return {"message": "API is Run!"}
 
-@app.get("/api/card")
+@app.get("/api/card/gi")
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: int=None):

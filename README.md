@@ -14,14 +14,13 @@ Githubでの使用を目的としている。
 | `game` | ゲームの種類 | o | gi |
 | `uid` | ゲーム内のUID | o |  |
 | `bg` | 背景画像 | x |  |
-| `bg_color` | 背景色 | x |  |
 | `lang` | 言語 | x | en |
 | `hide_uid` |  |  | false |
 | `top` |  |  |  |
 | `bottom` |  |  |  |
 
 ```text
-https://hv-cards.vercel.app/api/{game}/?uid={uid}
+https://hv-cards.vercel.app/api/card/{game}/?uid={uid}
 ```
 
 ### ゲームID

@@ -140,10 +140,10 @@
       <Card>
         <h2 class="text-3xl mb-3 font-bold text-center text-gray-900 dark:text-white duration-300">Preview</h2>
         <!-- MarkdownPreview -->
-        <h3 class="text-xl mb-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
+        <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
         <CodeBlock code="[![Github HoYoverse Card](https://hv-cards.vercel.app/api/card?uid=819312869)](https://hv-cards.vercel.app)"/>
         <!-- HTMLPreview -->
-        <h3 class="text-xl mb-3 font-bold text-gray-900 dark:text-white duration-300">HTML</h3>
+        <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">HTML</h3>
         <CodeBlock code="<a href='https://hv-cards.vercel.app'><img src='https://hv-cards.vercel.app/api/card?uid=819312869' alt='Github HoYoverse Card'></a>"/>
       </Card>
     </div>
