@@ -29,9 +29,9 @@
 
   $: gameParam = gameMap[selectedGameOption];
   $: langParam = langMap[selectedLangOption];
-  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hv-cards.vercel.app';
-  $: markdownCode = `[![Github HoYoverse Card](${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''})](https://hv-cards.vercel.app/)`;
-  $: htmlCode = `<a href='https://hv-cards.vercel.app/'><img src='${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''}' alt='Github HoYoverse Card'></a>`;
+  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hv-cards.vercel.app';
+  $: markdownCode = `[![Github HoYoverse Card](${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''})](https://github-hv-cards.vercel.app/)`;
+  $: htmlCode = `<a href='https://github-hv-cards.vercel.app/'><img src='${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''}' alt='Github HoYoverse Card'></a>`;
 
   function handleGameSelect(event: CustomEvent<{ selectedOption: GameOption }>) {
     selectedGameOption = event.detail.selectedOption;
@@ -195,7 +195,7 @@
   <footer class="flex justify-center mt-8">
     <button
       class="p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative"
-      on:click={() => location.href='https://github.com/suzuuuuu09/hv-cards'}
+      on:click={() => location.href='https://github.com/suzuuuuu09/github-hv-cards'}
       title="View on GitHub"
       style="cursor:pointer"
     >

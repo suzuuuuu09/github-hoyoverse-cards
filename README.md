@@ -1,4 +1,4 @@
-# hv-cards
+# GitHub HoYoverse Cards
 
 HoYoverseゲームのプロフィールカード
 
@@ -20,7 +20,7 @@ Githubでの使用を目的としている。
 | `bottom` |  |  |  |
 
 ```text
-https://hv-cards.vercel.app/api/card/{game}/?uid={uid}
+https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 ```
 
 ### ゲームID

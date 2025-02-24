@@ -11,7 +11,7 @@
 
   let isLoading = true;
 
-  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://hv-cards.vercel.app';
+  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hv-cards.vercel.app';
   $: imageUrl = `${baseUrl}/api/card/${game}/?uid=${uid}${bg ? `&bg=${bg}` : ''}${lang !== 'en' ? `&lang=${lang}` : ''}${hideUid ? '&hide_uid=true' : ''}${top ? `&top=${top}` : ''}${bottom ? `&bottom=${bottom}` : ''}`;
 
   function handleImageLoad() {
@@ -19,7 +19,7 @@
   }
 </script>
 
-<div class="w-full h-20 max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden relative">
+<div class="w-full max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden relative">
   {#if uid.trim()}
     {#if isLoading}
       <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
