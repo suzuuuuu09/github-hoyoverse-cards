@@ -1,6 +1,6 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
-  import { Card, ThemeToggle, CodeBlock, Dropdown, ImagePreview, InputField } from "$lib/components";
+  import { Card, ThemeToggle, CodeBlock, Dropdown, ImagePreview, InputField, Information } from "$lib/components";
   
   const gameMap = {
     "Genshin Impact": "gi",
@@ -68,7 +68,10 @@
         
         <!-- 項目1(ゲーム選択) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="game" class="text-gray-900 dark:text-white">Game<span class="text-red-500">*</span></label>
+          <div class="flex items-center gap-1">
+            <label for="game" class="text-gray-900 dark:text-white">Game<span class="text-red-500">*</span></label>
+            <Information>Select the HoYoverse game you want to display stats for</Information>
+          </div>
           <Dropdown
             id="game"
             options={["Genshin Impact", "Honkai Star Rail", "Zenless Zone Zero"]}
@@ -79,7 +82,10 @@
 
         <!-- 項目2(UID) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="uid" class="text-gray-900 dark:text-white">UID<span class="text-red-500">*</span></label>
+          <div class="flex items-center gap-1">
+            <label for="uid" class="text-gray-900 dark:text-white">UID<span class="text-red-500">*</span></label>
+            <Information>Your in-game UID number</Information>
+          </div>
           <InputField
             id="uid"
             type="text"
@@ -90,7 +96,10 @@
         
         <!-- 項目3(背景ID) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="bg-id" class="text-gray-900 dark:text-white">Background</label>
+          <div class="flex items-center gap-1">
+            <label for="bg-id" class="text-gray-900 dark:text-white">Background</label>
+            <Information>Custom background ID for your card</Information>
+          </div>
           <InputField
             id="bg"
             type="text"
@@ -101,7 +110,10 @@
 
         <!-- 項目4(言語選択) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="lang" class="text-gray-900 dark:text-white">Language</label>
+          <div class="flex items-center gap-1">
+            <label for="lang" class="text-gray-900 dark:text-white">Language</label>
+            <Information>Display language for the card content</Information>
+          </div>
           <Dropdown
             id="lang"
             options={["简体中文", "繁體中文", "English", "日本語", "한국어"]}
@@ -112,7 +124,10 @@
 
         <!-- 項目5(UID隠す) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="hide-uid" class="text-gray-900 dark:text-white">Hide UID</label>
+          <div class="flex items-center gap-1">
+            <label for="hide-uid" class="text-gray-900 dark:text-white">Hide UID</label>
+            <Information>Option to hide your UID from the display</Information>
+          </div>
           <Dropdown
             id="hide-uid"
             options={["True", "False"]}
@@ -123,7 +138,10 @@
         
         <!-- 項目6(TOP) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="top" class="text-gray-900 dark:text-white">Top</label>
+          <div class="flex items-center gap-1">
+            <label for="top" class="text-gray-900 dark:text-white">Top</label>
+            <Information>Alignment for the top section of the card</Information>
+          </div>
           <Dropdown
             id="top"
             options={["Left", "Center", "Right"]}
@@ -134,7 +152,10 @@
 
         <!-- 項目7(BOTTOM) -->
         <div class="flex my-1.5 items-center justify-between">
-          <label for="bottom" class="text-gray-900 dark:text-white">Bottom</label>
+          <div class="flex items-center gap-1">
+            <label for="bottom" class="text-gray-900 dark:text-white">Bottom</label>
+            <Information>Alignment for the bottom section of the card</Information>
+          </div>
           <Dropdown
             id="bottom"
             options={["Left", "Center", "Right"]}

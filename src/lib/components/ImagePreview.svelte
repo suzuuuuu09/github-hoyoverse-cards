@@ -19,7 +19,7 @@
   }
 </script>
 
-<div class="w-full max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden relative">
+<div class="w-full h-20 max-w-[800px] mx-auto my-4 rounded-lg overflow-hidden relative">
   {#if uid.trim()}
     {#if isLoading}
       <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
