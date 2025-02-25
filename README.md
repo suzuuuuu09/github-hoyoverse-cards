@@ -34,6 +34,7 @@ https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 ### 言語
 
 | 言語ID | 言語 |
+| :---: | :---: |
 | en | English |
 | cn | 简体中文 |
 | tw | 繁體中文 |
