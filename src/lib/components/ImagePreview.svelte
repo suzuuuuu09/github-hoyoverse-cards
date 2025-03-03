@@ -1,10 +1,11 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
+  import type { GameCode, LangCode } from "$lib/types";
   
-  export let game: 'gi' | 'hsr' | 'zzz' = 'gi';
+  export let game: GameCode;
   export let uid: string = '';
   export let bg: string = '';
-  export let lang: string = 'en';
+  export let lang: LangCode = 'en';
   export let hideUid: boolean = false;
   export let top: string = '';
   export let bottom: string = '';

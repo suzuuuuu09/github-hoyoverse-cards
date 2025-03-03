@@ -1,56 +1,31 @@
 <script lang="ts">
   import Icon from "@iconify/svelte";
   import { Card, ThemeToggle, CodeBlock, Dropdown, ImagePreview, InputField, Information } from "$lib/components";
-  
-  const gameMap = {
-    "Genshin Impact": "gi",
-    "Honkai Star Rail": "hsr",
-    "Zenless Zone Zero": "zzz"
-  } as const;
+  import { settings, urlParams } from "$lib/stores/settings";
+  import { GAME_MAP, LANG_MAP, DEFAULT_VALUES } from "$lib/constants/mappings";
+  import type { GameOption, LangOption } from "$lib/types";
 
-  const langMap = {
-    "简体中文": "cn",
-    "繁體中文": "tw",
-    "English": "en",
-    "日本語": "jp",
-    "한국어": "kr"
-  } as const;
-
-  type GameOption = keyof typeof gameMap;
-  type LangOption = keyof typeof langMap;
-
-  let selectedGameOption: GameOption = "Genshin Impact";
-  let selectedLangOption: LangOption = "English";
-  let selectedHideUidOption = false;
-  let selectedTopOption = "Left";
-  let selectedBottomOption = "Right";
-  let uid = "";
-  let bgId = "";
-
-  $: gameParam = gameMap[selectedGameOption];
-  $: langParam = langMap[selectedLangOption];
-  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hv-cards.vercel.app';
-  $: markdownCode = `[![Github HoYoverse Card](${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''})](https://github-hv-cards.vercel.app/)`;
-  $: htmlCode = `<a href='https://github-hv-cards.vercel.app/'><img src='${baseUrl}/api/card/${gameParam}/?uid=${uid}${bgId ? `&bg=${bgId}` : ''}${langParam !== 'en' ? `&lang=${langParam}` : ''}${selectedHideUidOption ? '&hide_uid=true' : ''}${selectedTopOption.toLowerCase() !== 'left' ? `&top=${selectedTopOption.toLowerCase()}` : ''}${selectedBottomOption.toLowerCase() !== 'right' ? `&bottom=${selectedBottomOption.toLowerCase()}` : ''}' alt='Github HoYoverse Card'></a>`;
+  $: markdownCode = `[![Github HoYoverse Card](${$urlParams.baseUrl}/api/card/${$urlParams.gameCode}/?uid=${$urlParams.uid}${$urlParams.queryString ? `&${$urlParams.queryString}` : ''})](${DEFAULT_VALUES.BASE_URL})`;
+  $: htmlCode = `<a href='${DEFAULT_VALUES.BASE_URL}'><img src='${$urlParams.baseUrl}/api/card/${$urlParams.gameCode}/?uid=${$urlParams.uid}${$urlParams.queryString ? `&${$urlParams.queryString}` : ''}' alt='Github HoYoverse Card'></a>`;
 
   function handleGameSelect(event: CustomEvent<{ selectedOption: GameOption }>) {
-    selectedGameOption = event.detail.selectedOption;
+    settings.update(s => ({ ...s, game: event.detail.selectedOption }));
   }
 
   function handleLangSelect(event: CustomEvent<{ selectedOption: LangOption }>) {
-    selectedLangOption = event.detail.selectedOption;
+    settings.update(s => ({ ...s, lang: event.detail.selectedOption }));
   }
 
-  function handleHideUidSelect(event: CustomEvent<{ selectedOption: boolean }>) {
-    selectedHideUidOption = event.detail.selectedOption;
+  function handleHideUidSelect(event: CustomEvent<{ selectedOption: string }>) {
+    settings.update(s => ({ ...s, hideUid: event.detail.selectedOption === "True" }));
   }
 
-  function handleTopSelect(event: CustomEvent<{ selectedOption: string }>) {
-    selectedTopOption = event.detail.selectedOption;
+  function handleTopSelect(event: CustomEvent<{ selectedOption: "Left" | "Center" | "Right" }>) {
+    settings.update(s => ({ ...s, topAlign: event.detail.selectedOption }));
   }
 
-  function handleBottomSelect(event: CustomEvent<{ selectedOption: string }>) {
-    selectedBottomOption = event.detail.selectedOption;
+  function handleBottomSelect(event: CustomEvent<{ selectedOption: "Left" | "Center" | "Right" }>) {
+    settings.update(s => ({ ...s, bottomAlign: event.detail.selectedOption }));
   }
 </script>
 
@@ -66,7 +41,7 @@
       <Card>
         <h2 class="text-3xl mb-3 font-bold text-center text-gray-900 dark:text-white duration-300">Properties</h2>
         
-        <!-- 項目1(ゲーム選択) -->
+        <!-- Game Selection -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="game" class="text-gray-900 dark:text-white">Game<span class="text-red-500">*</span></label>
@@ -74,13 +49,13 @@
           </div>
           <Dropdown
             id="game"
-            options={["Genshin Impact", "Honkai Star Rail", "Zenless Zone Zero"]}
-            initialSelectedOption={selectedGameOption}
+            options={Object.keys(GAME_MAP)}
+            initialSelectedOption={$settings.game}
             on:select={handleGameSelect}
           />
         </div>
 
-        <!-- 項目2(UID) -->
+        <!-- UID -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="uid" class="text-gray-900 dark:text-white">UID<span class="text-red-500">*</span></label>
@@ -90,11 +65,11 @@
             id="uid"
             type="text"
             placeholder="Type UID..."
-            bind:value={uid}
+            bind:value={$settings.uid}
           />
         </div>
         
-        <!-- 項目3(背景ID) -->
+        <!-- Background ID -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="bg-id" class="text-gray-900 dark:text-white">Background</label>
@@ -104,11 +79,11 @@
             id="bg"
             type="text"
             placeholder="Type Background ID..."
-            bind:value={bgId}
+            bind:value={$settings.bgId}
           />
         </div>
 
-        <!-- 項目4(言語選択) -->
+        <!-- Language -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="lang" class="text-gray-900 dark:text-white">Language</label>
@@ -116,13 +91,13 @@
           </div>
           <Dropdown
             id="lang"
-            options={["简体中文", "繁體中文", "English", "日本語", "한국어"]}
-            initialSelectedOption={selectedLangOption}
+            options={Object.keys(LANG_MAP)}
+            initialSelectedOption={$settings.lang}
             on:select={handleLangSelect}
           />
         </div>
 
-        <!-- 項目5(UID隠す) -->
+        <!-- Hide UID -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="hide-uid" class="text-gray-900 dark:text-white">Hide UID</label>
@@ -131,12 +106,12 @@
           <Dropdown
             id="hide-uid"
             options={["True", "False"]}
-            initialSelectedOption={selectedHideUidOption ? "True" : "False"}
-            on:select={(event) => handleHideUidSelect(new CustomEvent('select', { detail: { selectedOption: event.detail.selectedOption === "True" } }))}
+            initialSelectedOption={$settings.hideUid ? "True" : "False"}
+            on:select={handleHideUidSelect}
           />
         </div>
         
-        <!-- 項目6(TOP) -->
+        <!-- Top Alignment -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="top" class="text-gray-900 dark:text-white">Top</label>
@@ -145,12 +120,12 @@
           <Dropdown
             id="top"
             options={["Left", "Center", "Right"]}
-            initialSelectedOption={selectedTopOption}
+            initialSelectedOption={$settings.topAlign}
             on:select={handleTopSelect}
           />
         </div>
 
-        <!-- 項目7(BOTTOM) -->
+        <!-- Bottom Alignment -->
         <div class="flex my-1.5 items-center justify-between">
           <div class="flex items-center gap-1">
             <label for="bottom" class="text-gray-900 dark:text-white">Bottom</label>
@@ -159,33 +134,36 @@
           <Dropdown
             id="bottom"
             options={["Left", "Center", "Right"]}
-            initialSelectedOption={selectedBottomOption}
+            initialSelectedOption={$settings.bottomAlign}
             on:select={handleBottomSelect}
           />
         </div>
       </Card>
+
       <!-- PreviewCard -->
       <Card>
         <h2 class="text-3xl mb-3 font-bold text-center text-gray-900 dark:text-white duration-300">Preview</h2>
-        {#if uid.trim()}
+        {#if $settings.uid.trim()}
           <ImagePreview
-            game={gameParam}
-            uid={uid}
-            bg={bgId}
-            lang={langParam}
-            hideUid={selectedHideUidOption}
-            top={selectedTopOption.toLowerCase()}
-            bottom={selectedBottomOption.toLowerCase()}
+            game={$urlParams.gameCode}
+            uid={$settings.uid}
+            bg={$settings.bgId}
+            lang={LANG_MAP[$settings.lang]}
+            hideUid={$settings.hideUid}
+            top={$settings.topAlign.toLowerCase()}
+            bottom={$settings.bottomAlign.toLowerCase()}
           />
         {:else}
-        <div class="flex flex-wrap w-full max-w-[800px] px-4 py-15 text-center justify-center bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg duration-300">
-          <p class="text-center text-gray-900 dark:text-white duration-300">Please enter a UID to see the preview.</p>
-        </div>
+          <div class="flex flex-wrap w-full max-w-[800px] px-4 py-15 text-center justify-center bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg duration-300">
+            <p class="text-center text-gray-900 dark:text-white duration-300">Please enter a UID to see the preview.</p>
+          </div>
         {/if}
-        <!-- MarkdownPreview -->
+
+        <!-- Markdown Preview -->
         <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">Markdown</h3>
         <CodeBlock code={markdownCode}/>
-        <!-- HTMLPreview -->
+
+        <!-- HTML Preview -->
         <h3 class="text-xl my-3 font-bold text-gray-900 dark:text-white duration-300">HTML</h3>
         <CodeBlock code={htmlCode}/>
       </Card>
