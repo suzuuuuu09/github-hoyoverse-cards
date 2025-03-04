@@ -22,7 +22,7 @@ app = FastAPI()
 
 # メモリキャッシュの実装
 _card_cache: Dict[str, Tuple[bytes, float]] = {}
-CACHE_DURATION = 3600  # 1時間のキャッシュ
+CACHE_DURATION = 1800  # 30分のキャッシュ
 
 def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int) -> str:
     """キャッシュキーの生成"""
