@@ -1,7 +1,8 @@
 from dataclasses import dataclass
 import aiohttp
 import asyncio
-from typing import Optional, Dict, Any
+from typing import Optional, Dict, Any, Tuple
+import time
 
 @dataclass
 class TowerInfo:
@@ -28,21 +29,40 @@ class UserInfo:
     tower: Optional[TowerInfo] = None   # 螺旋情報
     theater: Optional[TheaterInfo] = None # 幻想シアター情報
 
+# APIレスポンスのキャッシュ
+_api_cache: Dict[int, Tuple[UserInfo, float]] = {}
+API_CACHE_DURATION = 300  # 5分のキャッシュ
+
 class EnkaNetworkAPI:
     """EnkaNetworkのAPIを扱うクラス"""
     BASE_URL = "https://enka.network/api/uid"
-
+    
     @staticmethod
     async def fetch_user_data(user_id: int) -> Optional[UserInfo]:
         """ユーザー情報を取得する"""
+        current_time = time.time()
+
+        # キャッシュチェック
+        if user_id in _api_cache:
+            cached_data, cache_time = _api_cache[user_id]
+            if current_time - cache_time < API_CACHE_DURATION:
+                return cached_data
+
         try:
-            async with aiohttp.ClientSession() as session:
+            timeout = aiohttp.ClientTimeout(total=10)  # タイムアウトを10秒に設定
+            async with aiohttp.ClientSession(timeout=timeout) as session:
                 async with session.get(f"{EnkaNetworkAPI.BASE_URL}/{user_id}?info") as response:
                     if response.status != 200:
                         return None
 
                     data = await response.json()
-                    return EnkaNetworkAPI._parse_user_data(data)
+                    user_info = EnkaNetworkAPI._parse_user_data(data)
+                    
+                    # キャッシュの保存
+                    if user_info:
+                        _api_cache[user_id] = (user_info, current_time)
+                    
+                    return user_info
         except (aiohttp.ClientError, asyncio.TimeoutError):
             return None
 

@@ -1,6 +1,7 @@
 from PIL import Image, ImageDraw, ImageFont, ImageChops
 from dataclasses import dataclass
-from typing import Tuple, TYPE_CHECKING
+from typing import Tuple, TYPE_CHECKING, Dict
+from functools import lru_cache
 import json
 if TYPE_CHECKING:
     from PIL.Image import Image
@@ -44,22 +45,29 @@ def text_image(path, text):
 
     return im
 
-def draw_text_image(im, text, location, font, font_size, color="#fcfcfc"):
-    """テキストを画像に挿入"""
+@lru_cache(maxsize=128)
+def get_font(font_path: str, size: int) -> ImageFont.FreeTypeFont:
+    """フォントをキャッシュして返す"""
+    return ImageFont.truetype(font_path, size)
+
+def draw_text_image(im: Image, text: str, location: Tuple[int, int], font_path: str, font_size: int, color: str = "#fcfcfc") -> Image:
+    """テキストを画像に挿入（最適化版）"""
     draw = ImageDraw.Draw(im)
-    font = ImageFont.truetype(font, font_size)
+    font = get_font(font_path, font_size)
     draw.text(location, text=text, font=font, fill=color)
     return im
 
-def get_text_width(text, font, font_size):
-    """テキストの幅を取得"""
-    font = ImageFont.truetype(font, font_size)
+@lru_cache(maxsize=128)
+def get_text_width(text: str, font_path: str, font_size: int) -> int:
+    """テキストの幅を取得（キャッシュ付き）"""
+    font = get_font(font_path, font_size)
     bbox = font.getbbox(text)
     return bbox[2] - bbox[0]
 
-def get_text_height(text, font, font_size):
-    """テキストの高さを取得"""
-    font = ImageFont.truetype(font, font_size)
+@lru_cache(maxsize=128)
+def get_text_height(text: str, font_path: str, font_size: int) -> int:
+    """テキストの高さを取得（キャッシュ付き）"""
+    font = get_font(font_path, font_size)
     bbox = font.getbbox(text)
     return bbox[3] - bbox[1]
 
@@ -115,16 +123,25 @@ def multiply_image(base_im, overlay_im, opacity: float):
     im = Image.blend(base_im, im_multiplied, opacity)
     return im
 
+@lru_cache(maxsize=1)
 def load_localization(lang: str = "en") -> dict:
-    """言語設定ファイルを読み込む"""
+    """言語設定ファイルを読み込む（キャッシュ付き）"""
     with open("assets/localization.json", "r", encoding="utf-8") as f:
         return json.load(f)[lang]
 
+_image_cache: Dict[str, Image.Image] = {}
+
 def create_base_image(base_path: str, overlay_path: str, opacity: float = 0.7) -> Image:
-    """ベース画像の作成"""
+    """ベース画像の作成（キャッシュ付き）"""
+    cache_key = f"{base_path}_{overlay_path}_{opacity}"
+    if cache_key in _image_cache:
+        return _image_cache[cache_key].copy()
+
     base_im = Image.open(base_path)
     overlay_im = Image.open(overlay_path)
-    return multiply_image(base_im, overlay_im, opacity)
+    result = multiply_image(base_im, overlay_im, opacity)
+    _image_cache[cache_key] = result
+    return result.copy()
 
 def calculate_text_position(align: str, image_width: int, total_width: int, margin: int = 10) -> int:
     """テキストの開始位置を計算"""
@@ -142,12 +159,12 @@ def draw_text_group(im: Image, position: TextPosition, font_path: str) -> Image:
         im=im,
         location=(position.x, position.y),
         text=position.text,
-        font=font_path,
+        font_path=font_path,
         font_size=position.font_size,
         color=position.color
     )
 
-def draw_stats_item(im: Image, start_x: int, label: str, value: str, font: str,
+def draw_stats_item(im: Image, start_x: int, label: str, value: str, font_path: str,
                     item_spacing: int, localization: dict) -> Tuple[Image, int]:
     """統計項目を描画"""
     # ラベルの描画
@@ -155,34 +172,34 @@ def draw_stats_item(im: Image, start_x: int, label: str, value: str, font: str,
         im=im,
         location=(start_x, 160),
         text=localization[label],
-        font=font,
+        font_path=font_path,
         font_size=12,
         color="#d0d0d0"
     )
 
     # ラベルの幅を取得
-    text_width = get_text_width(localization[label], font, 12)
+    text_width = get_text_width(localization[label], font_path, 12)
 
     # 値の描画
     im = draw_text_image(
         im=im,
-        location=(start_x + (text_width - get_text_width(str(value), font, 16)) / 2, 140),
+        location=(start_x + (text_width - get_text_width(str(value), font_path, 16)) / 2, 140),
         text=str(value),
-        font=font,
+        font_path=font_path,
         font_size=16
     )
 
     return im, text_width
 
 def draw_user_info(im: Image, user_info: UserInfo, align_top: str, align_bottom: str,
-                   font: str, localization: dict) -> Image:
+                   font_path: str, localization: dict) -> Image:
     """ユーザー情報を描画"""
     image_width = im.size[0]
 
     # 上部の配置計算
-    name_width = get_text_width(user_info.name, font, 16)
-    rank_width = get_text_width(f"Lv. {user_info.adventure_rank}", font, 10)
-    uid_width = get_text_width(f"UID: {user_info.uid}", font, 12)
+    name_width = get_text_width(user_info.name, font_path, 16)
+    rank_width = get_text_width(f"Lv. {user_info.adventure_rank}", font_path, 10)
+    uid_width = get_text_width(f"UID: {user_info.uid}", font_path, 12)
     top_total_width = name_width + rank_width + 5
 
     name_start_x = calculate_text_position(align_top, image_width, top_total_width)
@@ -196,18 +213,18 @@ def draw_user_info(im: Image, user_info: UserInfo, align_top: str, align_bottom:
 
     # UIDを隠さない場合のみUIDを追加
     if not user_info.hide_uid:
-        uid_width = get_text_width(f"UID: {user_info.uid}", font, 12)
+        uid_width = get_text_width(f"UID: {user_info.uid}", font_path, 12)
         uid_start_x = calculate_text_position(align_top, image_width, uid_width)
         positions.append(
             TextPosition(x=uid_start_x, y=30, text=f"UID: {user_info.uid}", font_size=12)
         )
 
     for pos in positions:
-        im = draw_text_group(im, pos, font)
+        im = draw_text_group(im, pos, font_path)
 
     # 下部の統計情報の描画
     item_spacing = 10
-    start_x = calculate_text_position(align_bottom, image_width, bottom_total_width(localization, font, item_spacing))
+    start_x = calculate_text_position(align_bottom, image_width, bottom_total_width(localization, font_path, item_spacing))
 
     stats = [
         ("achievements", user_info.achievement),
@@ -218,15 +235,15 @@ def draw_user_info(im: Image, user_info: UserInfo, align_top: str, align_bottom:
 
     current_x = start_x
     for label, value in stats:
-        im, width = draw_stats_item(im, current_x, label, value, font, item_spacing, localization)
+        im, width = draw_stats_item(im, current_x, label, value, font_path, item_spacing, localization)
         current_x += width + item_spacing
 
     return im
 
-def bottom_total_width(localization: dict, font: str, item_spacing: int) -> int:
+def bottom_total_width(localization: dict, font_path: str, item_spacing: int) -> int:
     """下部の全体幅を計算"""
     labels = ['achievements', 'max_friendship', 'spiral_abyss', 'imaginarium_theater']
-    widths = [get_text_width(localization[label], font, 12) for label in labels]
+    widths = [get_text_width(localization[label], font_path, 12) for label in labels]
     return sum(widths) + item_spacing * 3
 
 def add_rounded_corners(im: Image, radius: int) -> Image:
@@ -261,7 +278,7 @@ def add_rounded_corners(im: Image, radius: int) -> Image:
     
     return im
 
-def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', lang: str, localization: dict) -> UserInfo:
+def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', uid: int, lang: str, localization: dict) -> UserInfo:
     """
     hoyo_apiのUserInfoをimg用のUserInfoに変換する
     """
@@ -294,7 +311,7 @@ if __name__ == "__main__":
             exit(1)
 
         # UserInfoの変換
-        user_info = convert_hoyo_to_img_userinfo(user_data, "jp", localization)
+        user_info = convert_hoyo_to_img_userinfo(user_data, uid, "jp", localization)
 
         # 画像の描画
         im = draw_user_info(im, user_info, "left", "right", font, localization)

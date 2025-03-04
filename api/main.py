@@ -1,7 +1,11 @@
-from fastapi import FastAPI
+from fastapi import FastAPI, Response
 from fastapi.responses import StreamingResponse
 import os
 from random import randint
+from functools import lru_cache
+from typing import Dict, Tuple
+import hashlib
+import time
 
 # Vercel環境でのみ動作か判定
 is_vercel = os.environ.get('VERCEL') == '1'
@@ -16,6 +20,15 @@ else:
 
 app = FastAPI()
 
+# メモリキャッシュの実装
+_card_cache: Dict[str, Tuple[bytes, float]] = {}
+CACHE_DURATION = 3600  # 1時間のキャッシュ
+
+def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int) -> str:
+    """キャッシュキーの生成"""
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}"
+    return hashlib.md5(key.encode()).hexdigest()
+
 @app.get("/api/info")
 def index():
     return {"message": "API is Run!"}
@@ -24,6 +37,16 @@ def index():
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: int=None):
+    # キャッシュキーの生成
+    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg)
+    current_time = time.time()
+
+    # キャッシュチェック
+    if cache_key in _card_cache:
+        cached_data, cache_time = _card_cache[cache_key]
+        if current_time - cache_time < CACHE_DURATION:
+            return Response(content=cached_data, media_type="image/png")
+
     # 初期設定
     font = "assets/fonts/gi.ttf"
     localization = img.load_localization(lang)
@@ -47,16 +70,8 @@ async def get_image(uid: int, lang: str="en",
         return {"error": "Failed to fetch user data"}
 
     # ユーザー情報の整形（hoyo_api.UserInfo から img.UserInfo への変換）
-    user_info = img.UserInfo(
-        name=hoyo_user_data.user_name,
-        adventure_rank=hoyo_user_data.adventure_rank,
-        achievement=str(hoyo_user_data.achievement or "-"),
-        friendship_max=str(hoyo_user_data.friendship_max or "-"),
-        tower=f"{hoyo_user_data.tower.floor or ''}-{hoyo_user_data.tower.level or ''}" if hoyo_user_data.tower else "-",
-        theater=localization['theater_act'].format(act=hoyo_user_data.theater.act) if hoyo_user_data.theater and hoyo_user_data.theater.act else "-",
-        uid=uid,
-        hide_uid=hide_uid
-    )
+    user_info = img.convert_hoyo_to_img_userinfo(hoyo_user_data, uid, lang, localization)
+    user_info.hide_uid = hide_uid  # hide_uidの設定を反映
 
     # 画像の描画
     im = img.draw_user_info(im, user_info, top, bottom, font, localization)
@@ -64,9 +79,12 @@ async def get_image(uid: int, lang: str="en",
     # 画像をbyteに変換
     from io import BytesIO
     img_byte_arr = BytesIO()
-    im.save(img_byte_arr, format='PNG')
+    im.save(img_byte_arr, format='PNG', optimize=True)
     img_byte_arr.seek(0)
-
+    
+    # キャッシュの保存
+    _card_cache[cache_key] = (img_byte_arr.getvalue(), current_time)
+    
     return StreamingResponse(img_byte_arr, media_type="image/png")
 
 if __name__ == "__main__":
