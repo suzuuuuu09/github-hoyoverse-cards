@@ -36,19 +36,24 @@ class UserInfo:
     uid: int
     hide_uid: bool = False
 
+def get_asset_path(path: str) -> str:
+    """Vercel環境でのパス解決"""
+    if is_vercel:
+        return os.path.join(os.getcwd(), path)
+    return path
+
 def text_image(path, text):
-    im = Image.open(path)
-
+    """テキストを画像に描画"""
+    im = Image.open(get_asset_path(path))
     draw = ImageDraw.Draw(im)
-    font = ImageFont.truetype("assets/fonts/gi.ttf", 36)
+    font = ImageFont.truetype(get_asset_path("assets/fonts/gi.ttf"), 36)
     draw.text((10, 10), text=text, font=font, fill=(0, 0, 0))
-
     return im
 
 @lru_cache(maxsize=128)
 def get_font(font_path: str, size: int) -> ImageFont.FreeTypeFont:
     """フォントをキャッシュして返す"""
-    return ImageFont.truetype(font_path, size)
+    return ImageFont.truetype(get_asset_path(font_path), size)
 
 def draw_text_image(im: Image, text: str, location: Tuple[int, int], font_path: str, font_size: int, color: str = "#fcfcfc") -> Image:
     """テキストを画像に挿入（最適化版）"""
@@ -126,7 +131,8 @@ def multiply_image(base_im, overlay_im, opacity: float):
 @lru_cache(maxsize=1)
 def load_localization(lang: str = "en") -> dict:
     """言語設定ファイルを読み込む（キャッシュ付き）"""
-    with open("assets/localization.json", "r", encoding="utf-8") as f:
+    file_path = get_asset_path("assets/localization.json")
+    with open(file_path, "r", encoding="utf-8") as f:
         return json.load(f)[lang]
 
 _image_cache: Dict[str, Image.Image] = {}
@@ -137,8 +143,8 @@ def create_base_image(base_path: str, overlay_path: str, opacity: float = 0.7) -
     if cache_key in _image_cache:
         return _image_cache[cache_key].copy()
 
-    base_im = Image.open(base_path)
-    overlay_im = Image.open(overlay_path)
+    base_im = Image.open(get_asset_path(base_path))
+    overlay_im = Image.open(get_asset_path(overlay_path))
     result = multiply_image(base_im, overlay_im, opacity)
     _image_cache[cache_key] = result
     return result.copy()
@@ -296,11 +302,11 @@ def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', uid: int, lang:
 if __name__ == "__main__":
     try:
         # 初期設定
-        font = "assets/fonts/gi.ttf"
+        font = get_asset_path("assets/fonts/gi.ttf")
         localization = load_localization("jp")  # 日本語を指定
 
         # ベース画像の作成
-        im = create_base_image("assets/img/gi/1.png", "assets/img/gradient.png")
+        im = create_base_image(get_asset_path("assets/img/gi/1.png"), get_asset_path("assets/img/gradient.png"))
 
         # ユーザー情報の取得
         uid = 801081402
@@ -320,7 +326,7 @@ if __name__ == "__main__":
         im = add_rounded_corners(im, 20)
 
         # 画像の保存
-        output_path = "assets/img/preview.png"
+        output_path = get_asset_path("assets/img/preview.png")
         im.save(output_path)
         print(f"画像を保存しました: {output_path}")
 

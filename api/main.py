@@ -29,6 +29,12 @@ def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, b
     key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}"
     return hashlib.md5(key.encode()).hexdigest()
 
+# Vercel環境でのパス解決
+def get_asset_path(path: str) -> str:
+    if is_vercel:
+        return os.path.join(os.getcwd(), path)
+    return path
+
 @app.get("/api/info")
 def index():
     return {"message": "API is Run!"}
@@ -48,20 +54,22 @@ async def get_image(uid: int, lang: str="en",
             return Response(content=cached_data, media_type="image/png")
 
     # 初期設定
-    font = "assets/fonts/gi.ttf"
+    font = get_asset_path("assets/fonts/gi.ttf")
     localization = img.load_localization(lang)
     
     # 背景画像の設定
     if bg is None:
         # 画像ファイルのリストを取得
-        files = os.listdir("assets/img/gi")
+        files = os.listdir(get_asset_path("assets/img/gi"))
         image_files = [f for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
         bg_id = randint(1, len(image_files))
     else:
         bg_id = bg
 
     # ベース画像の作成
-    im = img.create_base_image(f"assets/img/gi/{bg_id}.png", "assets/img/gradient.png")
+    base_img_path = get_asset_path(f"assets/img/gi/{bg_id}.png")
+    gradient_path = get_asset_path("assets/img/gradient.png")
+    im = img.create_base_image(base_img_path, gradient_path)
 
     # ユーザー情報の取得
     hoyo_user_data = await hoyo_api.fetch_user_data(uid)

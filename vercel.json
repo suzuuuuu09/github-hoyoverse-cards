@@ -1,5 +1,6 @@
 {
   "version": 2,
+  "devCommand": "uvicorn main:app --reload",
   "routes": [
     {
       "src": "/api/(.*)",
