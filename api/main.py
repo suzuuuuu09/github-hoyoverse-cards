@@ -24,9 +24,9 @@ app = FastAPI()
 _card_cache: Dict[str, Tuple[bytes, float]] = {}
 CACHE_DURATION = 3600  # 1時間のキャッシュ
 
-def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool) -> str:
-    """キャッシュキーの生成 (背景画像IDを除外)"""
-    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}"
+def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int) -> str:
+    """キャッシュキーの生成"""
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}"
     return hashlib.md5(key.encode()).hexdigest()
 
 # Vercel環境でのパス解決
@@ -43,49 +43,15 @@ def index():
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: Optional[int]=None):
-    # キャッシュキーの生成（背景画像IDを除外）
-    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid)
+    # キャッシュキーの生成
+    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg)
     current_time = time.time()
 
     # キャッシュチェック
     if cache_key in _card_cache:
         cached_data, cache_time = _card_cache[cache_key]
         if current_time - cache_time < CACHE_DURATION:
-            # 背景画像をランダムに選択
-            if bg is None:
-                img_dir = get_asset_path("assets/img/gi")
-                files = os.listdir(img_dir)
-                image_files = [f.split('.')[0] for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
-                if image_files:
-                    bg_id = randint(1, len(image_files))
-                else:
-                    bg_id = 1
-            else:
-                bg_id = bg
-
-            # キャッシュを無視して新しい背景で画像を生成
-            base_img_path = get_asset_path(f"assets/img/gi/{bg_id}.png")
-            gradient_path = get_asset_path("assets/img/gradient.png")
-            im = img.create_base_image(base_img_path, gradient_path)
-
-            # ユーザー情報の取得はキャッシュから
-            hoyo_user_data = await hoyo_api.fetch_user_data(uid)
-            if not hoyo_user_data:
-                return {"error": "Failed to fetch user data"}
-
-            user_info = img.convert_hoyo_to_img_userinfo(hoyo_user_data, uid, lang, localization)
-            user_info.hide_uid = hide_uid
-
-            # 画像の描画
-            im = img.draw_user_info(im, user_info, top, bottom, font, localization)
-            
-            # 画像をbyteに変換
-            from io import BytesIO
-            img_byte_arr = BytesIO()
-            im.save(img_byte_arr, format='PNG', optimize=True)
-            img_byte_arr.seek(0)
-            
-            return StreamingResponse(img_byte_arr, media_type="image/png")
+            return Response(content=cached_data, media_type="image/png")
 
     # 初期設定
     font = get_asset_path("assets/fonts/gi.ttf")
