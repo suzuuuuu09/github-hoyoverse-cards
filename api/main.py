@@ -3,7 +3,7 @@ from fastapi.responses import StreamingResponse
 import os
 from random import randint
 from functools import lru_cache
-from typing import Dict, Tuple
+from typing import Dict, Tuple, Optional
 import hashlib
 import time
 
@@ -42,7 +42,7 @@ def index():
 @app.get("/api/card/gi")
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
-                    hide_uid: bool=False, bg: int=None):
+                    hide_uid: bool=False, bg: Optional[int]=None):
     # キャッシュキーの生成
     cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg)
     current_time = time.time()
@@ -60,9 +60,13 @@ async def get_image(uid: int, lang: str="en",
     # 背景画像の設定
     if bg is None:
         # 画像ファイルのリストを取得
-        files = os.listdir(get_asset_path("assets/img/gi"))
-        image_files = [f for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
-        bg_id = randint(1, len(image_files))
+        img_dir = get_asset_path("assets/img/gi")
+        files = os.listdir(img_dir)
+        image_files = [f.split('.')[0] for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
+        if image_files:
+            bg_id = randint(1, len(image_files))
+        else:
+            bg_id = 1  # デフォルト値
     else:
         bg_id = bg
 

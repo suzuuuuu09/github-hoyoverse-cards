@@ -288,12 +288,18 @@ def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', uid: int, lang:
     """
     hoyo_apiのUserInfoをimg用のUserInfoに変換する
     """
+    # 螺旋の情報を整形
+    if hoyo_user.tower and hoyo_user.tower.floor and hoyo_user.tower.level:
+        tower_str = f"{hoyo_user.tower.floor}-{hoyo_user.tower.level}"
+    else:
+        tower_str = "-"
+
     return UserInfo(
         name=hoyo_user.user_name,
         adventure_rank=hoyo_user.adventure_rank,
         achievement=str(hoyo_user.achievement or "-"),
         friendship_max=str(hoyo_user.friendship_max or "-"),
-        tower=f"{hoyo_user.tower.floor or '-'}-{hoyo_user.tower.level or '-'}" if hoyo_user.tower else "-",
+        tower=tower_str,
         theater=localization['theater_act'].format(act=hoyo_user.theater.act) if hoyo_user.theater and hoyo_user.theater.act else "-",
         uid=uid,
         hide_uid=False
