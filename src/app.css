@@ -1,3 +1,8 @@
+/* tailwindcss */
 @import 'tailwindcss';
 
+/* darkmode */
 @custom-variant dark (&:where(.dark, .dark *));
+
+/* scrollbar */
+@plugin 'tailwind-scrollbar';

@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte'
+  import Icon from "$lib/components/Icon.svelte";
+  import { mdiMenuDown } from "@mdi/js";
   import { createEventDispatcher, onMount } from 'svelte';
   import { activeDropdownId } from '$lib/stores/dropdown';
 
@@ -54,7 +55,7 @@
     class="w-full bg-blue-500 text-white flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
   >
     {selectedOption}
-    <Icon icon="gridicons:dropdown" class="w-5 h-5 inline-block" />
+    <Icon path={mdiMenuDown} class="w-5 h-5 inline-block" />
   </button>
   {#if isOpen}
     <div class="absolute w-full z-10 mt-2 rounded-md shadow-xl bg-white dark:bg-gray-800 ring-1 ring-black ring-opacity-5 max-h-60 overflow-y-auto">

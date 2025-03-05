@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Icon from '@iconify/svelte'
+  import Icon from "$lib/components/Icon.svelte";
+  import { mdiWeatherSunny, mdiWeatherNight } from "@mdi/js";
 
   let isDark = false;
   let isAnimating = false;
@@ -21,16 +22,16 @@
 >
   <div class="absolute inset-0 flex items-center justify-center">
     {#if isDark}
-      <div class="flex items-center justify-center" 
-           class:rotate-enter={isAnimating}>
-        <Icon icon="mdi:weather-sunny" 
-              class="text-2xl text-slate-300 duration-300"/>
+      <div class="flex items-center justify-center"
+        class:rotate-enter={isAnimating}
+      >
+        <Icon path={mdiWeatherSunny} class="text-2xl text-slate-300 duration-300"/>
       </div>
     {:else}
       <div class="flex items-center justify-center"
-           class:rotate-exit={isAnimating}>
-        <Icon icon="mdi:weather-night" 
-              class="text-2xl text-slate-700 duration-300"/>
+        class:rotate-exit={isAnimating}
+      >
+        <Icon path={mdiWeatherNight} class="text-2xl text-slate-700 duration-300"/>
       </div>
     {/if}
   </div>

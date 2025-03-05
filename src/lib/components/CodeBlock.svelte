@@ -1,5 +1,6 @@
 <script>
-  import Icon from "@iconify/svelte";
+  import Icon from '$lib/components/Icon.svelte';
+  import { mdiCheck, mdiContentCopy } from '@mdi/js';
   import { fade } from 'svelte/transition';
 
   export let code = '';
@@ -30,11 +31,11 @@
       class="rounded p-1.5 bg-gray-700 text-gray-300 transition-colors hover:bg-gray-600"
       title="Copy code"
     >
-      <Icon icon={copied ? 'mdi:check' : 'mdi:content-copy'} class="w-5 h-5" />
+      <Icon path={copied ? mdiCheck : mdiContentCopy} class="w-5 h-5" />
     </button>
   </div>
   
-  <pre class="flex overflow-x-auto pt-8">
+  <pre class="flex overflow-x-auto pt-8 scrollbar-thin scrollbar-track-gray-800 scrollbar-thumb-gray-600 hover:scrollbar-thumb-gray-500">
     <code class="block w-full font-mono text-sm text-gray-300">{code}</code>
   </pre>
 </div>

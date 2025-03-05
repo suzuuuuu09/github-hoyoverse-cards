@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
+  import Icon from "$lib/components/Icon.svelte";
+  import { mdiGithub } from "@mdi/js";
   import { Card, ThemeToggle, CodeBlock, Dropdown, ImagePreview, InputField, Information } from "$lib/components";
   import { settings, urlParams } from "$lib/stores/settings";
   import { GAME_MAP, LANG_MAP, DEFAULT_VALUES } from "$lib/constants/mappings";
@@ -177,7 +178,7 @@
       title="View on GitHub"
       style="cursor:pointer"
     >
-      <Icon icon="mdi:github" class="w-8 h-8 text-gray-900 dark:text-white duration-300" />
+      <Icon path={mdiGithub} class="w-8 h-8 text-gray-900 dark:text-white duration-300" />
     </button>
   </footer>
 </main>

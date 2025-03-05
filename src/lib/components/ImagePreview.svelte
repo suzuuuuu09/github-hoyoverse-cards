@@ -1,5 +1,6 @@
 <script lang="ts">
-  import Icon from "@iconify/svelte";
+  import Icon from "$lib/components/Icon.svelte";
+  import { mdiLoading } from "@mdi/js";
   import type { GameCode, LangCode } from "$lib/types";
   
   export let game: GameCode;
@@ -24,7 +25,7 @@
   {#if uid.trim()}
     {#if isLoading}
       <div class="absolute inset-0 flex items-center justify-center bg-gray-100 dark:bg-gray-800">
-        <Icon icon="mdi:loading" class="w-12 h-12 text-gray-900 dark:text-white animate-spin" />
+        <Icon path={mdiLoading} class="w-12 h-12 text-gray-900 dark:text-white animate-spin" />
       </div>
     {/if}
     <img
