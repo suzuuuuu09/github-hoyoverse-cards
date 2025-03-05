@@ -17,7 +17,6 @@
         "eslint-config-prettier": "^10.0.1",
         "eslint-plugin-svelte": "^2.46.1",
         "globals": "^15.14.0",
-        "mdi-svelte": "^1.1.2",
         "postcss": "^8.5.3",
         "prettier": "^3.4.2",
         "prettier-plugin-svelte": "^3.3.3",
@@ -484,8 +483,6 @@
     "magic-string": ["magic-string@0.30.17", "", { "dependencies": { "@jridgewell/sourcemap-codec": "^1.5.0" } }, "sha512-sNPKHvyjVf7gyjwS4xGTaW/mCnF8wnjtifKBEhxfZ7E/S8tQ0rssrwGNn6q8JH/ohItJfSQp9mBtQYuTlH5QnA=="],
 
     "make-dir": ["make-dir@3.1.0", "", { "dependencies": { "semver": "^6.0.0" } }, "sha512-g3FeP20LNwhALb/6Cz6Dd4F2ngze0jz7tbzrD2wAV+o9FeNHe4rL+yK2md0J/fiSf1sa1ADhXqi5+oVwOM/eGw=="],
-
-    "mdi-svelte": ["mdi-svelte@1.1.2", "", {}, "sha512-jVn/CxVzOXTVWDJpUgkgbL/Dt3GTcxa51bOZHQtmrW+lPNypKXddNJIvcqSX+xW6KRIgjB4m715XjaqbDT/mFA=="],
 
     "merge2": ["merge2@1.4.1", "", {}, "sha512-8q7VEgMJW4J8tcfVPy8g09NcQwZdbwFEqhe/WZkoIzjn/3TGDwtOCYtXGxA3O8tPzpczCCDgv+P2P5y00ZJOOg=="],
 
