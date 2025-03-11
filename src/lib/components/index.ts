@@ -6,3 +6,5 @@ export { default as InputField } from './InputField.svelte';
 export { default as Button } from './buttons/Button.svelte';
 export { default as ThemeToggle } from './buttons/ThemeToggleButton.svelte';
 export { default as Information } from './Information.svelte';
+export { default as PropertiesCard } from './PropertiesCard.svelte';
+export { default as PreviewCard } from './PreviewCard.svelte';
