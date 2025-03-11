@@ -24,9 +24,9 @@ app = FastAPI()
 _card_cache: Dict[str, Tuple[bytes, float]] = {}
 CACHE_DURATION = 1800  # 30分のキャッシュ
 
-def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int) -> str:
+def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int, radius: int) -> str:
     """キャッシュキーの生成"""
-    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}"
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}"
     return hashlib.md5(key.encode()).hexdigest()
 
 # Vercel環境でのパス解決
@@ -42,9 +42,10 @@ def index():
 @app.get("/api/card/gi")
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
-                    hide_uid: bool=False, bg: Optional[int]=None):
-    # キャッシュキーの生成
-    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg)
+                    hide_uid: bool=False, bg: Optional[int]=None,
+                    radius: int=10):
+    # キャッシュキーの生成（radiusパラメータを追加）
+    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius)
     current_time = time.time()
 
     # キャッシュチェック
@@ -87,6 +88,9 @@ async def get_image(uid: int, lang: str="en",
 
     # 画像の描画
     im = img.draw_user_info(im, user_info, top, bottom, font, localization)
+    
+    # 角丸を適用（radiusパラメータを使用）
+    im = img.add_rounded_corners(im, radius)
     
     # 画像をbyteに変換
     from io import BytesIO
