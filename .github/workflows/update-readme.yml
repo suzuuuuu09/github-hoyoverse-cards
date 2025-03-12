@@ -1,0 +1,33 @@
+name: Update README
+
+on:
+  push:
+    paths:
+      - 'assets/img/gi/*.png'
+      - 'assets/img/hsr/*.png'
+      - 'assets/img/zzz/*.png'
+    branches:
+      - main
+
+jobs:
+  update-readme:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v3
+      
+      - name: Set up Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+      
+      - name: Update README
+        run: |
+          python scripts/update_readme.py
+      
+      - name: Commit changes
+        run: |
+          git config --local user.email "github-actions[bot]@users.noreply.github.com"
+          git config --local user.name "github-actions[bot]"
+          git add assets/img/README.md
+          git commit -m "docs: update image gallery in README" || echo "No changes to commit"
+          git push
