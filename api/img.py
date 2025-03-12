@@ -26,6 +26,12 @@ class TextPosition:
     color: str = "#fcfcfc"
 
 @dataclass
+class BorderStyle:
+    width: int = 0
+    color: str = "#000000"
+    radius: int = 10
+
+@dataclass
 class UserInfo:
     name: str
     adventure_rank: int
@@ -252,6 +258,52 @@ def bottom_total_width(localization: dict, font_path: str, item_spacing: int) ->
     widths = [get_text_width(localization[label], font_path, 12) for label in labels]
     return sum(widths) + item_spacing * 3
 
+def add_border(im: Image, border: BorderStyle) -> Image:
+    """
+    画像に角丸の枠線を追加する
+    
+    Args:
+        im (Image): 入力画像
+        border (BorderStyle): 枠線のスタイル設定
+        
+    Returns:
+        Image: 枠線追加後の画像
+    """
+    if border.width <= 0 or not border.color:
+        return im
+
+    # 元の画像サイズを使用
+    w, h = im.size
+    
+    # 角丸マスクを作成
+    mask = Image.new('L', (w, h), 0)
+    mask_draw = ImageDraw.Draw(mask)
+    mask_draw.rounded_rectangle(
+        [(0, 0), (w - 1, h - 1)],
+        radius=border.radius,
+        fill=255
+    )
+    
+    # RGBAモードに変換し、マスクを適用して角丸にする
+    rgba_im = im.convert('RGBA')
+    
+    # 新しい透明な画像を作成
+    result = Image.new('RGBA', (w, h), (0, 0, 0, 0))
+    
+    # マスクを使って元画像を角丸にして貼り付け
+    result.paste(rgba_im, (0, 0), mask)
+    
+    # 枠線を描画
+    draw = ImageDraw.Draw(result)
+    draw.rounded_rectangle(
+        [(0, 0), (w - 1, h - 1)],
+        radius=border.radius,
+        outline=border.color if border.color else "#ffffff",
+        width=border.width
+    )
+    
+    return result
+
 def add_rounded_corners(im: Image, radius: int) -> Image:
     """
     画像に角丸を適用する
@@ -335,6 +387,10 @@ if __name__ == "__main__":
 
         # 角丸を適用
         im = add_rounded_corners(im, 20)
+
+        # 枠線を追加
+        border = BorderStyle(width=2, color="#ffffff")
+        im = add_border(im, border)
 
         # 画像の保存
         output_path = get_asset_path("assets/img/preview.png")

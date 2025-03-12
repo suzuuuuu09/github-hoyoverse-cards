@@ -24,9 +24,9 @@ app = FastAPI()
 _card_cache: Dict[str, Tuple[bytes, float]] = {}
 CACHE_DURATION = 1800  # 30分のキャッシュ
 
-def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int, radius: int) -> str:
+def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int, radius: int, border_width: int, border_color: str) -> str:
     """キャッシュキーの生成"""
-    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}"
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}_{border_width}_{border_color}"
     return hashlib.md5(key.encode()).hexdigest()
 
 # Vercel環境でのパス解決
@@ -43,9 +43,9 @@ def index():
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: Optional[int]=None,
-                    radius: int=10):
-    # キャッシュキーの生成（radiusパラメータを追加）
-    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius)
+                    radius: int=10, border_width: int=0, border_color: str="ffffff"):
+    # キャッシュキーの生成
+    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius, border_width, border_color)
     current_time = time.time()
 
     # キャッシュチェック
@@ -53,11 +53,11 @@ async def get_image(uid: int, lang: str="en",
         cached_data, cache_time = _card_cache[cache_key]
         if current_time - cache_time < CACHE_DURATION:
             return Response(content=cached_data, media_type="image/png")
-
+        
     # 初期設定
     font = get_asset_path("assets/fonts/gi.ttf")
     localization = img.load_localization(lang)
-    
+
     # 背景画像の設定
     if bg is None:
         # 画像ファイルのリストを取得
@@ -88,9 +88,10 @@ async def get_image(uid: int, lang: str="en",
 
     # 画像の描画
     im = img.draw_user_info(im, user_info, top, bottom, font, localization)
-    
-    # 角丸を適用（radiusパラメータを使用）
-    im = img.add_rounded_corners(im, radius)
+
+    # 枠線と角丸を追加
+    border = img.BorderStyle(width=border_width, color=f"#{border_color}", radius=radius)
+    im = img.add_border(im, border)
     
     # 画像をbyteに変換
     from io import BytesIO
@@ -102,6 +103,7 @@ async def get_image(uid: int, lang: str="en",
     _card_cache[cache_key] = (img_byte_arr.getvalue(), current_time)
     
     return StreamingResponse(img_byte_arr, media_type="image/png")
+
 
 if __name__ == "__main__":
     import uvicorn
