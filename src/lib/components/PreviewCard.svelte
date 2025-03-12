@@ -31,7 +31,7 @@
       {radius}
     />
   {:else}
-    <div class="flex flex-wrap w-full max-w-[800px] px-4 py-15 text-center justify-center bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg duration-300">
+    <div class="flex flex-wrap w-full px-4 py-15 text-center justify-center bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg duration-300">
       <p class="text-center text-gray-900 dark:text-white duration-300">Please enter a UID to see the preview.</p>
     </div>
   {/if}
