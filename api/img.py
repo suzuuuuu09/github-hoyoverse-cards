@@ -263,6 +263,11 @@ def add_rounded_corners(im: Image, radius: int) -> Image:
     Returns:
         Image: 角丸処理後の画像
     """
+    # radiusが0の場合は元の画像をそのまま返す
+    if radius <= 0:
+        im = im.convert('RGBA')
+        return im
+
     # アルファチャンネル付きの新しい画像を作成
     circle = Image.new('L', (radius * 2, radius * 2), 0)
     draw = ImageDraw.Draw(circle)
