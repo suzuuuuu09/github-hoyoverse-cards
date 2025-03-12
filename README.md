@@ -15,9 +15,11 @@ Githubでの使用を目的としている。
 | `uid` | ゲーム内のUID | o |  |
 | `bg` | 背景画像 | x |  |
 | `lang` | 言語 | x | en |
-| `hide_uid` |  |  | false |
-| `top` |  |  |  |
-| `bottom` |  |  |  |
+| `hide_uid` | UIDを隠す |  | false |
+| `top` | 上部の情報の位置 |  |  |
+| `bottom` | 下部の情報の位置 |  |  |
+| `border_width` | 枠線の太さ |  | 0 |
+| `border_color` | 枠線の色 |  | ffffff |
 
 ```text
 https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
