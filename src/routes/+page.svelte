@@ -25,6 +25,7 @@
         hideUid={$settings.hideUid}
         top={$settings.topAlign.toLowerCase()}
         bottom={$settings.bottomAlign.toLowerCase()}
+        radius={$settings.radius}
       />
     </div>
   </div>

@@ -20,5 +20,6 @@ export const DEFAULT_VALUES = {
   HIDE_UID: false,
   TOP_ALIGN: "Left" as const,
   BOTTOM_ALIGN: "Right" as const,
-  BASE_URL: 'https://github-hv-cards.vercel.app'
+  RADIUS: 10,
+  BASE_URL: 'https://github-hv-cards.vercel.app',
 } as const;

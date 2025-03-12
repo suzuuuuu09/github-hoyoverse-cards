@@ -10,6 +10,7 @@ interface Settings {
   hideUid: boolean;
   topAlign: 'Left' | 'Center' | 'Right';
   bottomAlign: 'Left' | 'Center' | 'Right';
+  radius: number;
 }
 
 export const settings = writable<Settings>({
@@ -19,7 +20,8 @@ export const settings = writable<Settings>({
   lang: DEFAULT_VALUES.LANG,
   hideUid: DEFAULT_VALUES.HIDE_UID,
   topAlign: DEFAULT_VALUES.TOP_ALIGN,
-  bottomAlign: DEFAULT_VALUES.BOTTOM_ALIGN
+  bottomAlign: DEFAULT_VALUES.BOTTOM_ALIGN,
+  radius: DEFAULT_VALUES.RADIUS
 });
 
 export const baseUrl = writable(DEFAULT_VALUES.BASE_URL);
@@ -36,6 +38,7 @@ export const urlParams = derived(
     if ($settings.hideUid) params.set('hide_uid', 'true');
     if ($settings.topAlign.toLowerCase() !== 'left') params.set('top', $settings.topAlign.toLowerCase());
     if ($settings.bottomAlign.toLowerCase() !== 'right') params.set('bottom', $settings.bottomAlign.toLowerCase());
+    if ($settings.radius !== DEFAULT_VALUES.RADIUS) params.set('radius', $settings.radius.toString());
 
     return {
       gameCode,

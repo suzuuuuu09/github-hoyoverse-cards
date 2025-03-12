@@ -125,4 +125,20 @@
       on:select={handleBottomSelect}
     />
   </div>
+
+  <!-- Rounded Corner -->
+  <div class="flex my-1.5 items-center justify-between">
+    <div class="flex items-center gap-1">
+      <label for="radius" class="text-gray-900 dark:text-white">Rounded Corner</label>
+      <Information>Corner roundness of the card (0-20)</Information>
+    </div>
+    <InputField
+      id="radius"
+      type="number"
+      placeholder="Corner radius..."
+      min={0}
+      max={20}
+      bind:value={$settings.radius}
+    />
+  </div>
 </Card>
