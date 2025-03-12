@@ -28,7 +28,7 @@
     {/if}
     <button
       on:click={copyCode}
-      class="rounded p-1.5 bg-gray-700 text-gray-300 transition-colors hover:bg-gray-600"
+      class="cursor-pointer rounded p-1.5 bg-gray-700 text-gray-300 transition-colors hover:bg-gray-600"
       title="Copy code"
     >
       <Icon path={copied ? mdiCheck : mdiContentCopy} class="w-5 h-5" />

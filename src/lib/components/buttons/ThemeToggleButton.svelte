@@ -18,7 +18,7 @@
 
 <button
   on:click={toggleTheme}
-  class="p-3 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative w-12 h-12"
+  class="cursor-pointer p-3 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative w-12 h-12"
 >
   <div class="absolute inset-0 flex items-center justify-center">
     {#if isDark}

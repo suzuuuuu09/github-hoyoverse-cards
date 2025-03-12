@@ -52,7 +52,7 @@
 <div class="relative w-1/2" bind:this={dropdownContainer}>
   <button
     on:click={toggleDropdown}
-    class="w-full bg-blue-500 text-white flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
+    class="cursor-pointer w-full bg-blue-500 text-white flex items-center justify-between px-4 py-2 rounded-md hover:bg-blue-600 focus:outline-none"
   >
     {selectedOption}
     <Icon path={mdiMenuDown} class="w-5 h-5 inline-block" />
@@ -62,7 +62,7 @@
       <div class="py-1" role="menu">
         {#each options as option}
           <button
-            class="block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700"
+            class="cursor-pointer block w-full text-left px-4 py-2 text-sm text-gray-700 dark:text-gray-200 hover:bg-gray-300 dark:hover:bg-gray-700"
             on:click={() => selectOption(option)}
           >
             {option}

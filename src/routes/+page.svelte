@@ -32,10 +32,9 @@
 
   <footer class="flex justify-center mt-8">
     <button
-      class="p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative"
+      class="cursor-pointer p-2 rounded-lg hover:bg-slate-300 dark:hover:bg-slate-700 duration-300 relative"
       on:click={() => location.href='https://github.com/suzuuuuu09/github-hv-cards'}
       title="View on GitHub"
-      style="cursor:pointer"
     >
       <Icon path={mdiGithub} class="w-8 h-8 text-gray-900 dark:text-white duration-300" />
     </button>
