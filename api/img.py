@@ -260,18 +260,15 @@ def bottom_total_width(localization: dict, font_path: str, item_spacing: int) ->
 
 def add_border(im: Image, border: BorderStyle) -> Image:
     """
-    画像に角丸の枠線を追加する
+    画像に角丸と枠線を追加する
     
     Args:
         im (Image): 入力画像
         border (BorderStyle): 枠線のスタイル設定
         
     Returns:
-        Image: 枠線追加後の画像
+        Image: 処理後の画像
     """
-    if border.width <= 0 or not border.color:
-        return im
-
     # 元の画像サイズを使用
     w, h = im.size
     
@@ -292,15 +289,16 @@ def add_border(im: Image, border: BorderStyle) -> Image:
     
     # マスクを使って元画像を角丸にして貼り付け
     result.paste(rgba_im, (0, 0), mask)
-    
-    # 枠線を描画
-    draw = ImageDraw.Draw(result)
-    draw.rounded_rectangle(
-        [(0, 0), (w - 1, h - 1)],
-        radius=border.radius,
-        outline=border.color if border.color else "#ffffff",
-        width=border.width
-    )
+
+    # 枠線幅が0より大きい場合のみ枠線を描画
+    if border.width > 0 and border.color:
+        draw = ImageDraw.Draw(result)
+        draw.rounded_rectangle(
+            [(0, 0), (w - 1, h - 1)],
+            radius=border.radius,
+            outline=border.color,
+            width=border.width
+        )
     
     return result
 
