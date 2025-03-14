@@ -11,11 +11,13 @@
   export let top: string = '';
   export let bottom: string = '';
   export let radius: number = 10;
+  export let borderWidth: number = 0;
+  export let borderColor: string = '#ffffff';
 
   let isLoading = true;
 
   $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hv-cards.vercel.app';
-  $: imageUrl = `${baseUrl}/api/card/${game}/?uid=${uid}${bg ? `&bg=${bg}` : ''}${lang !== 'en' ? `&lang=${lang}` : ''}${hideUid ? '&hide_uid=true' : ''}${top ? `&top=${top}` : ''}${bottom ? `&bottom=${bottom}` : ''}${radius !== 10 ? `&radius=${radius}` : ''}`;
+  $: imageUrl = `${baseUrl}/api/card/${game}/?uid=${uid}${bg ? `&bg=${bg}` : ''}${lang !== 'en' ? `&lang=${lang}` : ''}${hideUid ? '&hide_uid=true' : ''}${top ? `&top=${top}` : ''}${bottom ? `&bottom=${bottom}` : ''}${radius !== 10 ? `&radius=${radius}` : ''}${borderWidth ? `&border_width=${borderWidth}` : ''}${borderWidth ? `&border_color=${borderColor.replace('#', '')}` : ''}`;
 
   function handleImageLoad() {
     isLoading = false;

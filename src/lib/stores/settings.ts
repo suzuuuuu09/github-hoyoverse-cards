@@ -11,6 +11,9 @@ interface Settings {
   topAlign: 'Left' | 'Center' | 'Right';
   bottomAlign: 'Left' | 'Center' | 'Right';
   radius: number;
+  borderEnabled: boolean;
+  borderWidth: number;
+  borderColor: string;
 }
 
 export const settings = writable<Settings>({
@@ -21,7 +24,10 @@ export const settings = writable<Settings>({
   hideUid: DEFAULT_VALUES.HIDE_UID,
   topAlign: DEFAULT_VALUES.TOP_ALIGN,
   bottomAlign: DEFAULT_VALUES.BOTTOM_ALIGN,
-  radius: DEFAULT_VALUES.RADIUS
+  radius: DEFAULT_VALUES.RADIUS,
+  borderEnabled: false,
+  borderWidth: 2,
+  borderColor: '#ffffff'
 });
 
 export const baseUrl = writable(DEFAULT_VALUES.BASE_URL);
@@ -39,6 +45,10 @@ export const urlParams = derived(
     if ($settings.topAlign.toLowerCase() !== 'left') params.set('top', $settings.topAlign.toLowerCase());
     if ($settings.bottomAlign.toLowerCase() !== 'right') params.set('bottom', $settings.bottomAlign.toLowerCase());
     if ($settings.radius !== DEFAULT_VALUES.RADIUS) params.set('radius', $settings.radius.toString());
+    if ($settings.borderEnabled) {
+      params.set('border_width', $settings.borderWidth.toString());
+      params.set('border_color', $settings.borderColor.replace('#', ''));
+    }
 
     return {
       gameCode,

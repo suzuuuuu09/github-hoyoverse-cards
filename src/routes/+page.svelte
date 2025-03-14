@@ -26,6 +26,8 @@
         top={$settings.topAlign.toLowerCase()}
         bottom={$settings.bottomAlign.toLowerCase()}
         radius={$settings.radius}
+        borderWidth={$settings.borderEnabled ? $settings.borderWidth : 0}
+        borderColor={$settings.borderColor}
       />
     </div>
   </div>

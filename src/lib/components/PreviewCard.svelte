@@ -12,6 +12,8 @@
   export let top: string;
   export let bottom: string;
   export let radius: number;
+  export let borderWidth: number = 0;
+  export let borderColor: string = '#ffffff';
 
   $: markdownCode = `[![Github HoYoverse Card](${$urlParams.baseUrl}/api/card/${$urlParams.gameCode}/?uid=${$urlParams.uid}${$urlParams.queryString ? `&${$urlParams.queryString}` : ''})](${DEFAULT_VALUES.BASE_URL})`;
   $: htmlCode = `<a href='${DEFAULT_VALUES.BASE_URL}'><img src='${$urlParams.baseUrl}/api/card/${$urlParams.gameCode}/?uid=${$urlParams.uid}${$urlParams.queryString ? `&${$urlParams.queryString}` : ''}' alt='Github HoYoverse Card'></a>`;
@@ -29,6 +31,8 @@
       {top}
       {bottom}
       {radius}
+      {borderWidth}
+      {borderColor}
     />
   {:else}
     <div class="flex flex-wrap w-full px-4 py-15 text-center justify-center bg-gray-100 dark:bg-slate-900 text-gray-900 dark:text-white rounded-lg duration-300">
