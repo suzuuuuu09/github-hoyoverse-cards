@@ -7,11 +7,11 @@ export const GAME_MAP: Record<GameOption, GameCode> = {
 };
 
 export const LANG_MAP: Record<LangOption, LangCode> = {
-  "简体中文": "cn",
-  "繁體中文": "tw",
+  "简体中文": "zh-CN",
+  "繁體中文": "zh-TW",
   "English": "en",
-  "日本語": "jp",
-  "한국어": "kr"
+  "日本語": "ja",
+  "한국어": "ko"
 };
 
 export const DEFAULT_VALUES = {

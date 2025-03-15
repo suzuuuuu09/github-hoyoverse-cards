@@ -6,28 +6,28 @@
     "imaginarium_theater": "Imaginarium Theater",
     "theater_act": "Act {act}"
   },
-  "jp": {
+  "ja": {
     "achievements": "アチーブメント",
     "max_friendship": "好感度MAX",
     "spiral_abyss": "深境螺旋",
     "imaginarium_theater": "幻想シアター",
     "theater_act": "第{act}幕"
   },
-  "cn": {
+  "zh-CN": {
     "achievements": "成就达成数",
     "max_friendship": "满好感角色数",
     "spiral_abyss": "深境螺旋",
     "imaginarium_theater": "幻想真境剧诗",
     "theater_act": "第{act}幕"
   },
-  "tw": {
+  "zh-TW": {
     "achievements": "成就達成數",
     "max_friendship": "滿好感角色數",
     "spiral_abyss": "深境螺旋",
     "imaginarium_theater": "幻想真境劇詩",
     "theater_act": "第{act}幕"
   },
-  "kr": {
+  "ko": {
     "achievements": "업적 달성 개수",
     "max_friendship": "호감도 MAX 캐릭터 수",
     "spiral_abyss": "나선 비경",

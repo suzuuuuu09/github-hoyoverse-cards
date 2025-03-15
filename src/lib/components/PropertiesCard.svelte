@@ -152,7 +152,7 @@
 
   <details class="mt-3">
     <summary class="text-gray-900 dark:text-white cursor-pointer">Border Settings</summary>
-    <div class="mt-3 space-y-4">
+    <div class="mt-3 space-y-4 ml-3">
       <!-- Border Enable/Disable -->
       <div class="flex items-center justify-between">
         <div class="flex items-center gap-1">

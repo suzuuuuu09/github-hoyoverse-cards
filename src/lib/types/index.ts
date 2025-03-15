@@ -3,4 +3,4 @@ export type LangOption = "简体中文" | "繁體中文" | "English" | "日本�
 export type AlignmentOption = "Left" | "Center" | "Right";
 
 export type GameCode = "gi" | "hsr" | "zzz";
-export type LangCode = "cn" | "tw" | "en" | "jp" | "kr";
+export type LangCode = "zh-CN" | "zh-TW" | "en" | "ja" | "ko";
