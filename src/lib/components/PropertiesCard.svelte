@@ -3,34 +3,6 @@
   import { settings } from "$lib/stores/settings";
   import { GAME_MAP, LANG_MAP } from "$lib/constants/mappings";
   import type { GameOption, LangOption } from "$lib/types";
-
-  function handleGameSelect(event: CustomEvent<{ selectedOption: GameOption }>) {
-    settings.update(s => ({ ...s, game: event.detail.selectedOption }));
-  }
-
-  function handleLangSelect(event: CustomEvent<{ selectedOption: LangOption }>) {
-    settings.update(s => ({ ...s, lang: event.detail.selectedOption }));
-  }
-
-  function handleHideUidSelect(event: CustomEvent<{ selectedOption: string }>) {
-    settings.update(s => ({ ...s, hideUid: event.detail.selectedOption === "True" }));
-  }
-
-  function handleTopSelect(event: CustomEvent<{ selectedOption: "Left" | "Center" | "Right" }>) {
-    settings.update(s => ({ ...s, topAlign: event.detail.selectedOption }));
-  }
-
-  function handleBottomSelect(event: CustomEvent<{ selectedOption: "Left" | "Center" | "Right" }>) {
-    settings.update(s => ({ ...s, bottomAlign: event.detail.selectedOption }));
-  }
-
-  function handleBorderToggle(event: CustomEvent<{ checked: boolean }>) {
-    settings.update(s => ({ ...s, borderEnabled: event.detail.checked }));
-  }
-
-  function handleBorderWidthChange(event: CustomEvent<{ value: number }>) {
-    settings.update(s => ({ ...s, borderWidth: event.detail.value }));
-  }
 </script>
 
 <Card>
@@ -46,7 +18,7 @@
       id="game"
       options={Object.keys(GAME_MAP)}
       initialSelectedOption={$settings.game}
-      on:select={handleGameSelect}
+      on:select={(e) => settings.update(s => ({ ...s, game: e.detail.selectedOption as GameOption }))}
     />
   </div>
 
@@ -88,7 +60,7 @@
       id="lang"
       options={Object.keys(LANG_MAP)}
       initialSelectedOption={$settings.lang}
-      on:select={handleLangSelect}
+      on:select={(e) => settings.update(s => ({ ...s, lang: e.detail.selectedOption as LangOption }))}
     />
   </div>
 
@@ -102,7 +74,7 @@
       id="hide-uid"
       options={["True", "False"]}
       initialSelectedOption={$settings.hideUid ? "True" : "False"}
-      on:select={handleHideUidSelect}
+      on:select={(e) => settings.update(s => ({ ...s, hideUid: e.detail.selectedOption === "True" }))}
     />
   </div>
   
@@ -116,7 +88,7 @@
       id="top"
       options={["Left", "Center", "Right"]}
       initialSelectedOption={$settings.topAlign}
-      on:select={handleTopSelect}
+      on:select={(e) => settings.update(s => ({ ...s, topAlign: e.detail.selectedOption as "Left" | "Center" | "Right" }))}
     />
   </div>
 
@@ -130,8 +102,26 @@
       id="bottom"
       options={["Left", "Center", "Right"]}
       initialSelectedOption={$settings.bottomAlign}
-      on:select={handleBottomSelect}
+      on:select={(e) => settings.update(s => ({ ...s, bottomAlign: e.detail.selectedOption as "Left" | "Center" | "Right" }))}
     />
+  </div>
+
+  <!-- Shadow -->
+  <div class="flex my-1.5 items-center justify-between">
+    <div class="flex items-center gap-1">
+      <label for="shadow" class="text-gray-900 dark:text-white">Shadow</label>
+      <Information>Shadow intensity of the overlay (0-1)</Information>
+    </div>
+    <div class="w-1/2">
+      <Slider
+        min={0}
+        max={1}
+        step={0.05}
+        value={$settings.shadow}
+        unit=""
+        on:change={(e) => settings.update(s => ({ ...s, shadow: e.detail.value }))}
+      />
+    </div>
   </div>
 
   <!-- Rounded Corner -->
@@ -161,7 +151,7 @@
         </div>
         <Toggle
           checked={$settings.borderEnabled}
-          on:change={handleBorderToggle}
+          on:change={(e) => settings.update(s => ({ ...s, borderEnabled: e.detail.checked }))}
         />
       </div>
 
@@ -179,7 +169,7 @@
             active={$settings.borderEnabled}
             disabled={!$settings.borderEnabled}
             unit="px"
-            on:change={handleBorderWidthChange}
+            on:change={(e) => settings.update(s => ({ ...s, borderWidth: e.detail.value }))}
           />
         </div>
       </div>

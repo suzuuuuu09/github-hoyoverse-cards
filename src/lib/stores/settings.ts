@@ -14,6 +14,7 @@ interface Settings {
   borderEnabled: boolean;
   borderWidth: number;
   borderColor: string;
+  shadow: number;
 }
 
 export const settings = writable<Settings>({
@@ -27,7 +28,8 @@ export const settings = writable<Settings>({
   radius: DEFAULT_VALUES.RADIUS,
   borderEnabled: false,
   borderWidth: 2,
-  borderColor: '#ffffff'
+  borderColor: '#ffffff',
+  shadow: 0.7
 });
 
 export const baseUrl = writable(DEFAULT_VALUES.BASE_URL);
@@ -49,6 +51,7 @@ export const urlParams = derived(
       params.set('border_width', $settings.borderWidth.toString());
       params.set('border_color', $settings.borderColor.replace('#', ''));
     }
+    if ($settings.shadow !== 0.7) params.set('shadow', $settings.shadow.toString());
 
     return {
       gameCode,
