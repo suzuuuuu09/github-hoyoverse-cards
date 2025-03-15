@@ -28,7 +28,7 @@ def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool,
                    bg: int, radius: int, border_width: int, border_color: str,
                    shadow: float) -> str:
     """キャッシュキーの生成"""
-    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}_{border_width}_{border_color}_{shadow}"
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}_{border_width}_{border_color}_{shadow:.1f}"
     return hashlib.md5(key.encode()).hexdigest()
 
 # Vercel環境でのパス解決
