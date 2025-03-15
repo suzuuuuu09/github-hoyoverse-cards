@@ -51,8 +51,7 @@ export const urlParams = derived(
       params.set('border_width', $settings.borderWidth.toString());
       params.set('border_color', $settings.borderColor.replace('#', ''));
     }
-    if ($settings.shadow !== 0.7) params.set('shadow', $settings.shadow.toString());
-
+    if (Math.abs($settings.shadow - 0.7) > 1e-9) params.set('shadow', $settings.shadow.toString());
     return {
       gameCode,
       baseUrl: $baseUrl,
