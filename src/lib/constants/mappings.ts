@@ -21,5 +21,5 @@ export const DEFAULT_VALUES = {
   TOP_ALIGN: "Left" as const,
   BOTTOM_ALIGN: "Right" as const,
   RADIUS: 10,
-  BASE_URL: 'https://github-hv-cards.vercel.app',
+  BASE_URL: 'https://github-hoyoverse-cards.vercel.app',
 } as const;

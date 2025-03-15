@@ -24,9 +24,11 @@ app = FastAPI()
 _card_cache: Dict[str, Tuple[bytes, float]] = {}
 CACHE_DURATION = 1800  # 30分のキャッシュ
 
-def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool, bg: int, radius: int, border_width: int, border_color: str) -> str:
+def _get_cache_key(uid: int, lang: str, top: str, bottom: str, hide_uid: bool,
+                   bg: int, radius: int, border_width: int, border_color: str,
+                   shadow: float) -> str:
     """キャッシュキーの生成"""
-    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}_{border_width}_{border_color}"
+    key = f"{uid}_{lang}_{top}_{bottom}_{hide_uid}_{bg}_{radius}_{border_width}_{border_color}_{shadow:.1f}"
     return hashlib.md5(key.encode()).hexdigest()
 
 # Vercel環境でのパス解決
@@ -43,9 +45,10 @@ def index():
 async def get_image(uid: int, lang: str="en",
                     top: str="left", bottom: str="right",
                     hide_uid: bool=False, bg: Optional[int]=None,
-                    radius: int=10, border_width: int=0, border_color: str="ffffff"):
+                    radius: int=10, border_width: int=0, border_color: str="ffffff",
+                    shadow: float=0.7):
     # キャッシュキーの生成
-    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius, border_width, border_color)
+    cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius, border_width, border_color, shadow)
     current_time = time.time()
 
     # キャッシュチェック
@@ -74,7 +77,7 @@ async def get_image(uid: int, lang: str="en",
     # ベース画像の作成
     base_img_path = get_asset_path(f"assets/img/gi/{bg_id}.png")
     gradient_path = get_asset_path("assets/img/gradient.png")
-    im = img.create_base_image(base_img_path, gradient_path)
+    im = img.create_base_image(base_img_path, gradient_path, shadow)
 
     # ユーザー情報の取得
     hoyo_user_data = await hoyo_api.fetch_user_data(uid)

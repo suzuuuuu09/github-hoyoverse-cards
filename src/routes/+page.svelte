@@ -28,6 +28,7 @@
         radius={$settings.radius}
         borderWidth={$settings.borderEnabled ? $settings.borderWidth : 0}
         borderColor={$settings.borderColor}
+        shadow={$settings.shadow}
       />
     </div>
   </div>

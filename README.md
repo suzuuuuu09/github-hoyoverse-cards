@@ -8,15 +8,18 @@ GitHub HoYoverse CardsはHoYoverse(miHoYo)が開発するゲームのプロフ�
 ## 🎯 対応状況
 
 ### ✅ 対応済みゲーム
+
 - [原神 (Genshin Impact)](https://genshin.hoyoverse.com)
 
 ### 🚧 対応予定ゲーム
+
 - [崩壊スターレイル (Honkai: Star Rail)](https://hsr.hoyoverse.com)
 - [ゼンレスゾーンゼロ (Zenless Zone Zero)](https://zenless.hoyoverse.com)
 
 ## 💻 使い方
 
 ### 🔧 基本的な使用方法
+
 ```text
 https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 ```
@@ -34,6 +37,7 @@ https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 | `bottom` | 下部情報の位置 | ❌ | center | `left` / `center` / `right` |
 | `border_width` | 枠線の太さ | ❌ | 0 | `0` 〜 `10` |
 | `border_color` | 枠線の色 | ❌ | ffffff | HEXカラーコード (例: `ff0000`) |
+| `shadow` | 影の強さ | ❌️ | 0.7 | `0` ~ `1.0` |
 
 ## 🎮 ゲームID
 
@@ -54,6 +58,7 @@ https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 | ko | 한국어 |
 
 ### 📝 使用例
+
 ```markdown
 基本的な使用方法:
 ![Genshin Impact Card](https://github-hv-cards.vercel.app/api/card/gi/?uid=800000000)
@@ -64,6 +69,7 @@ https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 
 ## 👥 貢献
 プロジェクトへの貢献は大歓迎です！以下の方法で貢献できます：
+
 - バグの報告
 - 新機能の提案
 - プルリクエストの送信
