@@ -1,5 +1,5 @@
 from fastapi import FastAPI, Response
-from fastapi.responses import StreamingResponse
+from fastapi.responses import StreamingResponse, JSONResponse
 import os
 from random import randint
 from functools import lru_cache
@@ -83,7 +83,7 @@ async def get_image(uid: int, lang: str="en",
     hoyo_user_data = await hoyo_api.fetch_user_data(uid)
 
     if not hoyo_user_data:
-        return {"error": "Failed to fetch user data"}
+        return JSONResponse(content={"error": "Failed to fetch user data"}, status_code=500)
 
     # ユーザー情報の整形（hoyo_api.UserInfo から img.UserInfo への変換）
     user_info = img.convert_hoyo_to_img_userinfo(hoyo_user_data, uid, lang, localization)
@@ -105,7 +105,10 @@ async def get_image(uid: int, lang: str="en",
     # キャッシュの保存
     _card_cache[cache_key] = (img_byte_arr.getvalue(), current_time)
     
-    return StreamingResponse(img_byte_arr, media_type="image/png")
+    async def img_byte_stream():
+        yield img_byte_arr.getvalue()
+    
+    return StreamingResponse(img_byte_stream(), media_type="image/png")
 
 
 if __name__ == "__main__":

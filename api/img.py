@@ -315,7 +315,6 @@ def add_rounded_corners(im: Image, radius: int) -> Image:
     """
     # radiusが0の場合は元の画像をそのまま返す
     if radius <= 0:
-        im = im.convert('RGBA')
         return im
 
     # アルファチャンネル付きの新しい画像を作成
@@ -323,16 +322,20 @@ def add_rounded_corners(im: Image, radius: int) -> Image:
     draw = ImageDraw.Draw(circle)
     draw.ellipse((0, 0, radius * 2 - 1, radius * 2 - 1), fill=255)
     
-    # アルファチャンネル用のマスクを作成
+    # RGBAモードに変換し、アルファチャンネル用のマスクを作成
+    im = im.convert('RGBA')
     alpha = Image.new('L', im.size, 255)
     w, h = im.size
     
     # 四隅にマスクを適用
-    alpha.paste(circle.crop((0, 0, radius, radius)), (0, 0))  # 左上
-    alpha.paste(circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0))  # 右上
-    alpha.paste(circle.crop((0, radius, radius, radius * 2)), (0, h - radius))  # 左下
-    alpha.paste(circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius))  # 右下
-    
+    corners = [
+        (circle.crop((0, 0, radius, radius)), (0, 0)),  # 左上
+        (circle.crop((radius, 0, radius * 2, radius)), (w - radius, 0)),  # 右上
+        (circle.crop((0, radius, radius, radius * 2)), (0, h - radius)),  # 左下
+        (circle.crop((radius, radius, radius * 2, radius * 2)), (w - radius, h - radius))  # 右下
+    ]
+    for corner, position in corners:
+        alpha.paste(corner, position)
     # 画像をRGBAモードに変換し、マスクを適用
     im = im.convert('RGBA')
     im.putalpha(alpha)
