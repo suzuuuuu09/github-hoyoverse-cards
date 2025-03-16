@@ -39,7 +39,7 @@
     bind:value
     {disabled}
     on:input={handleInput}
-    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700
+    class="w-full h-2 bg-gray-200 rounded-lg appearance-none cursor-pointer dark:bg-gray-700 duration-300
       [&::-webkit-slider-thumb]:appearance-none [&::-webkit-slider-thumb]:w-4 [&::-webkit-slider-thumb]:h-4 [&::-webkit-slider-thumb]:rounded-full 
       [&::-webkit-slider-thumb]:transition-colors
       [&::-webkit-slider-thumb]:border-0
@@ -64,11 +64,11 @@
       bind:value
       {disabled}
       on:input={handleNumberInput}
-      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+      class="w-16 px-2 py-1 text-sm border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 duration-300"
       class:opacity-50={disabled}
     />
     {#if unit}
-      <span class="text-sm text-gray-900 dark:text-white" class:opacity-50={disabled}>{unit}</span>
+      <span class="text-sm text-gray-900 dark:text-white duration-300" class:opacity-50={disabled}>{unit}</span>
     {/if}
   {/if}
 </div>

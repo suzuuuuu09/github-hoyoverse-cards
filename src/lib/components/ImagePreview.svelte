@@ -17,7 +17,7 @@
 
   let isLoading = true;
 
-  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hv-cards.vercel.app';
+  $: baseUrl = typeof window !== 'undefined' ? window.location.origin : 'https://github-hoyoverse-cards.vercel.app';
   $: imageUrl = `${baseUrl}/api/card/${game}/?uid=${uid}${bg ? `&bg=${bg}` : ''}${lang !== 'en' ? `&lang=${lang}` : ''}${hideUid ? '&hide_uid=true' : ''}${top ? `&top=${top}` : ''}${bottom ? `&bottom=${bottom}` : ''}${radius !== 10 ? `&radius=${radius}` : ''}${borderWidth ? `&border_width=${borderWidth}` : ''}${borderWidth ? `&border_color=${borderColor.replace('#', '')}` : ''}${shadow !== 0.7 ? `&shadow=${shadow}` : ''}`;
 
   function handleImageLoad() {

@@ -21,7 +21,7 @@ GitHub HoYoverse CardsはHoYoverse(miHoYo)が開発するゲームのプロフ�
 ### 🔧 基本的な使用方法
 
 ```text
-https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
+https://github-hoyoverse-cards.vercel.app/api/card/{game}/?uid={uid}
 ```
 
 ### ⚙️ パラメータ設定
@@ -61,10 +61,10 @@ https://github-hv-cards.vercel.app/api/card/{game}/?uid={uid}
 
 ```markdown
 基本的な使用方法:
-![Genshin Impact Card](https://github-hv-cards.vercel.app/api/card/gi/?uid=800000000)
+![Genshin Impact Card](https://github-hoyoverse-cards.vercel.app/api/card/gi/?uid=800000000)
 
 カスタマイズ例:
-![Genshin Impact Card](https://github-hv-cards.vercel.app/api/card/gi/?uid=800000000&lang=jp&top=left&border_width=2&border_color=ff0000)
+![Genshin Impact Card](https://github-hoyoverse-cards.vercel.app/api/card/gi/?uid=800000000&lang=jp&top=left&border_width=2&border_color=ff0000)
 ```
 
 ## 👥 貢献

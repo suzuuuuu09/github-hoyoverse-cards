@@ -185,7 +185,7 @@
             type="color"
             id="border-color"
             bind:value={$settings.borderColor}
-            class="w-12 h-8 p-0 border-0 cursor-pointer"
+            class="w-12 h-8 p-0 border-0 cursor-pointer duration-300"
             class:opacity-50={!$settings.borderEnabled}
             disabled={!$settings.borderEnabled}
             on:input={(e) => {
@@ -196,7 +196,7 @@
           <input
             type="text"
             value={$settings.borderColor.toUpperCase()}
-            class="w-20 px-2 py-1 text-sm border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100"
+            class="w-20 px-2 py-1 text-sm border border-gray-300 rounded dark:bg-gray-800 dark:border-gray-700 dark:text-gray-100 duration-300"
             class:opacity-50={!$settings.borderEnabled}
             placeholder="#FFFFFF"
             disabled={!$settings.borderEnabled}
