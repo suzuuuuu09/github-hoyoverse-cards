@@ -342,7 +342,7 @@ def add_rounded_corners(im: Image, radius: int) -> Image:
     
     return im
 
-def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.UserInfo', uid: int, lang: str, localization: dict) -> UserInfo:
+def convert_hoyo_to_img_userinfo(hoyo_user: 'hoyo_api.GenshinUserInfo', uid: int, lang: str, localization: dict) -> UserInfo:
     """
     hoyo_apiのUserInfoをimg用のUserInfoに変換する
     """

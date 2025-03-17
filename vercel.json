@@ -1,6 +1,10 @@
 {
   "version": 2,
   "devCommand": "uvicorn main:app --reload",
+  "buildCommand": "bun run build",
+  "installCommand": "bun install",
+  "framework": "sveltekit",
+  "ignoreCommand": "git diff --quiet HEAD^ HEAD ./bun.lock",
   "routes": [
     {
       "src": "/api/(.*)",

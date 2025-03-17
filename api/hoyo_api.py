@@ -19,7 +19,7 @@ class TheaterInfo:
     star: Optional[int] = None   # 幻想シアター星
 
 @dataclass
-class UserInfo:
+class GenshinUserInfo:
     """ユーザー情報を格納するデータクラス"""
     user_name: str                      # ユーザー名
     adventure_rank: int                 # 冒険ランク
@@ -30,7 +30,7 @@ class UserInfo:
     theater: Optional[TheaterInfo] = None # 幻想シアター情報
 
 # APIレスポンスのキャッシュ
-_api_cache: Dict[int, Tuple[UserInfo, float]] = {}
+_api_cache: Dict[int, Tuple[GenshinUserInfo, float]] = {}
 API_CACHE_DURATION = 300  # 5分のキャッシュ
 
 class EnkaNetworkAPI:
@@ -38,7 +38,7 @@ class EnkaNetworkAPI:
     BASE_URL = "https://enka.network/api/uid"
     
     @staticmethod
-    async def fetch_user_data(user_id: int) -> Optional[UserInfo]:
+    async def fetch_user_data(user_id: int) -> Optional[GenshinUserInfo]:
         """ユーザー情報を取得する"""
         current_time = time.time()
 
@@ -67,7 +67,7 @@ class EnkaNetworkAPI:
             return None
 
     @staticmethod
-    def _parse_user_data(data: Dict[str, Any]) -> Optional[UserInfo]:
+    def _parse_user_data(data: Dict[str, Any]) -> Optional[GenshinUserInfo]:
         """APIレスポンスからユーザー情報を解析する"""
         try:
             player_info = data["playerInfo"]
@@ -84,7 +84,7 @@ class EnkaNetworkAPI:
                 star=player_info.get("theaterStarIndex")
             )
             
-            return UserInfo(
+            return GenshinUserInfo(
                 user_name=player_info["nickname"],
                 adventure_rank=player_info["level"],
                 status_msg=player_info.get("signature"),
@@ -96,7 +96,7 @@ class EnkaNetworkAPI:
         except KeyError:
             return None
 
-async def fetch_user_data(user_id: int) -> Optional[UserInfo]:
+async def fetch_user_data(user_id: int) -> Optional[GenshinUserInfo]:
     """ユーザー情報を取得する（後方互換性のための関数）"""
     return await EnkaNetworkAPI.fetch_user_data(user_id)
 
