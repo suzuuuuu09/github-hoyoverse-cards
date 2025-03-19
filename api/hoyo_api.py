@@ -1,3 +1,4 @@
+# これは使われなくなったAPIのためのコードです
 from dataclasses import dataclass
 import aiohttp
 import asyncio
