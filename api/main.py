@@ -41,12 +41,19 @@ def get_asset_path(path: str) -> str:
 def index():
     return {"message": "API is Run!"}
 
-@app.get("/api/card/gi")
-async def get_image(uid: int, lang: str="en",
-                    top: str="left", bottom: str="right",
-                    hide_uid: bool=False, bg: Optional[int]=None,
-                    radius: int=10, border_width: int=0, border_color: str="ffffff",
-                    shadow: float=0.7):
+@app.get("/api/card/{game}")
+async def get_image(game: str, uid: int, lang: str = "en",
+                   top: str = "left", bottom: str = "right",
+                   hide_uid: bool = False, bg: Optional[int] = None,
+                   radius: int = 10, border_width: int = 0, border_color: str = "ffffff",
+                   shadow: float = 0.7):
+    # ゲーム種別のバリデーション
+    if game not in ["gi"]:  # 現在は原神のみ対応
+        return JSONResponse(
+            content={"error": "Unsupported game type"},
+            status_code=400
+        )
+
     # キャッシュキーの生成
     cache_key = _get_cache_key(uid, lang, top, bottom, hide_uid, bg, radius, border_width, border_color, shadow)
     current_time = time.time()
@@ -64,7 +71,7 @@ async def get_image(uid: int, lang: str="en",
     # 背景画像の設定
     if bg is None:
         # 画像ファイルのリストを取得
-        img_dir = get_asset_path("assets/img/gi")
+        img_dir = get_asset_path(f"assets/img/{game}")
         files = os.listdir(img_dir)
         image_files = [f.split('.')[0] for f in files if f.endswith(('.png', '.jpg', '.jpeg', '.webp'))]
         if image_files:
@@ -75,7 +82,7 @@ async def get_image(uid: int, lang: str="en",
         bg_id = bg
 
     # ベース画像の作成
-    base_img_path = get_asset_path(f"assets/img/gi/{bg_id}.png")
+    base_img_path = get_asset_path(f"assets/img/{game}/{bg_id}.png")
     gradient_path = get_asset_path("assets/img/gradient.png")
     im = img.create_base_image(base_img_path, gradient_path, shadow)
 
@@ -109,7 +116,6 @@ async def get_image(uid: int, lang: str="en",
         yield img_byte_arr.getvalue()
     
     return StreamingResponse(img_byte_stream(), media_type="image/png")
-
 
 if __name__ == "__main__":
     import uvicorn
