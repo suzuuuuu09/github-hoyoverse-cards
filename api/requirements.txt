@@ -1,6 +1,6 @@
 fastapi==0.104.1
 uvicorn==0.24.0
-Pillow==12.1.1
+Pillow==12.2.0
 python-multipart==0.0.22
 aiohttp==3.13.4
 pydantic==2.5.2
